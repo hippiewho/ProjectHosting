@@ -1,0 +1,28 @@
+﻿
+@{
+    ViewBag.Title = "Files";
+}
+
+<h2>Files</h2>
+
+<div>
+
+    <table>
+        <thead>
+            <tr><th>File Name</th><th>Download</th></tr>
+        </thead>
+        <tbody>
+            @{ 
+                
+                foreach (String d in ViewBag.Directories){
+            <tr>
+                <td>@d.Substring(d.LastIndexOf("\\") + 1)</td><td><a href="/Content/Images\@d.Substring(d.LastIndexOf("\\") + 1)" download>Download</a></td>
+            </tr>
+            }
+            }
+        </tbody>
+
+    </table>
+
+
+</div>

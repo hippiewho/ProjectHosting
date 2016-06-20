@@ -1,0 +1,20 @@
+﻿@model  IEnumerable<myWebsite.Models.LoginModel>
+@using myWebsite.Models;
+
+@{
+    ViewBag.Title = "AccountChooser";
+}
+
+<h2>AccountChooser</h2>
+
+<table cellpadding="10">
+    <thead>ID</thead>
+    <thead>Name</thead>
+    @foreach (LoginModel User in @Model)
+    {
+    <tr>
+        <td>@Html.ActionLink(@User.ID.ToString() , "AccountViewer","AccountView" , new { empID = User.ID } , null)</td>
+        <td colspan="1">@User.Name</td>
+    </tr>
+    }
+</table>
