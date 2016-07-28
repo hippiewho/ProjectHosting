@@ -13,8 +13,8 @@ namespace myWebsite.Models
     public class LoginContext : DbContext
     {
         public DbSet<LoginModel> UserList { get; set; }
+        
     }
-
 
     [Table("Creds")]
     public class LoginModel

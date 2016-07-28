@@ -1,24 +1,67 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data;
-using System.Data.Entity;
 using System.Linq;
 using System.Net;
-using System.Web;
 using System.Web.Mvc;
 using myWebsite.Models;
+using Microsoft.AspNet.Identity;
+using System.Security.Claims;
+using Microsoft.AspNet.Identity.Owin;
+using System.Web;
+using System.Web.Helpers;
+
+//using System.IdentityModel.Claims;
 
 namespace myWebsite.Controllers
 {
+    [Authorize]
     public class LoginController : Controller
     {
         private LoginContext db = new LoginContext();
+        private ApplicationSignInManager _signInManager;
+        private ApplicationUserManager _userManager;
+
+        public LoginController(){}
+
+        [AllowAnonymous]
         // GET: Login
         public ActionResult Login()
         {
             return View();
         }
+
+        [HttpPost]
+        [AllowAnonymous]
+        [ValidateAntiForgeryToken]
+        public ActionResult Login(LoginModel model, string retunUrl)
+        {
+          
+            String UserName = model.UserName;
+            String Password = model.Password;
+
+            LoginContext LC = new LoginContext();
+            LoginModel ValidUser = LC.UserList.Single(Person => Person.UserName == UserName && Person.Password == Password);
+
+
+            if (ValidUser != null)
+            {
+                var claims = new List<Claim>();
+                claims.Add(new Claim(ClaimTypes.Name, ValidUser.Name));
+                
+                var identity = new ClaimsIdentity(claims, DefaultAuthenticationTypes.ApplicationCookie);
+                System.Web.HttpContext.Current.GetOwinContext().Authentication.SignIn(identity);
+
+                AntiForgeryConfig.UniqueClaimTypeIdentifier = ClaimTypes.Name;
+                return Redirect("Index");
+            }
+            return View(model);
+        }
+
+
+
+
         // GET: Login Index of users
+        [AllowAnonymous]
         public ActionResult Index()
         {
             return View(db.UserList.ToList());
