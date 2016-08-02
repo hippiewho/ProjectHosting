@@ -18,9 +18,6 @@ namespace myWebsite.Controllers
     public class LoginController : Controller
     {
         private LoginContext db = new LoginContext();
-        private ApplicationSignInManager _signInManager;
-        private ApplicationUserManager _userManager;
-
         public LoginController(){}
 
         [AllowAnonymous]
@@ -33,35 +30,41 @@ namespace myWebsite.Controllers
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
-        public ActionResult Login(LoginModel model, string retunUrl)
+        public ActionResult Login(LoginModel model)
         {
-          
-            String UserName = model.UserName;
-            String Password = model.Password;
-
             LoginContext LC = new LoginContext();
-            LoginModel ValidUser = LC.UserList.Single(Person => Person.UserName == UserName && Person.Password == Password);
-
-
-            if (ValidUser != null)
+            try
             {
-                var claims = new List<Claim>();
-                claims.Add(new Claim(ClaimTypes.Name, ValidUser.Name));
-                
-                var identity = new ClaimsIdentity(claims, DefaultAuthenticationTypes.ApplicationCookie);
-                System.Web.HttpContext.Current.GetOwinContext().Authentication.SignIn(identity);
+                //LoginModel ValidUser = LC.UserList.Single(Person => Person.UserName == UserName && Person.Password == Password);
+                LoginModel ValidUser = LC.UserList.Single(Person => Person.UserName == model.UserName);
 
-                AntiForgeryConfig.UniqueClaimTypeIdentifier = ClaimTypes.Name;
-                return Redirect("Index");
+                if (ValidUser != null && Crypto.VerifyHashedPassword(ValidUser.Password, model.Password))
+                {
+                    var claims = new List<Claim>();
+                    claims.Add(new Claim(ClaimTypes.Name, ValidUser.Name));
+                    var identity = new ClaimsIdentity(claims, DefaultAuthenticationTypes.ApplicationCookie);
+                    System.Web.HttpContext.Current.GetOwinContext().Authentication.SignIn(identity);
+                    return Redirect("Index");
+                  }
+            }
+            catch (Exception e)
+            {
+                var GenericErrorMessage = "Error Occured: " + e.ToString();
+                Console.WriteLine(GenericErrorMessage);
             }
             return View(model);
         }
 
-
+        // GET : Log off
+        public ActionResult LogOff()
+        {
+            System.Web.HttpContext.Current.Request.GetOwinContext().Authentication.SignOut(DefaultAuthenticationTypes.ApplicationCookie);
+            return Redirect("/");
+        }
 
 
         // GET: Login Index of users
-        [AllowAnonymous]
+        [Authorize]
         public ActionResult Index()
         {
             return View(db.UserList.ToList());
@@ -82,6 +85,7 @@ namespace myWebsite.Controllers
             return View(loginModel);
         }
 
+        [AllowAnonymous]
         // GET: Login/Create
         public ActionResult Create()
         {
@@ -92,17 +96,23 @@ namespace myWebsite.Controllers
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
-        [ValidateAntiForgeryToken]
+        [AllowAnonymous]
         public ActionResult Create([Bind(Include = "ID,Email,Password,Name,UserName")] LoginModel loginModel)
         {
+
             if (ModelState.IsValid)
             {
+                loginModel.Password = Crypto.HashPassword(loginModel.Password);
                 db.UserList.Add(loginModel);
                 db.SaveChanges();
-                return RedirectToAction("Index");
             }
-
-            return View(loginModel);
+            if (Request.IsAuthenticated)
+            {
+                return View(loginModel);
+            } else
+            {
+                return Login(loginModel);
+            }
         }
 
         // GET: Login/Edit/5

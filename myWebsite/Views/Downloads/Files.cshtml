@@ -4,6 +4,7 @@
 }
 
 <h2>Files</h2>
+<h2>@ViewBag.s;</h2>
 
 <div>
 
@@ -14,13 +15,15 @@
         <tbody>
             @{ 
                 
-                foreach (String d in ViewBag.Directories){
-            <tr>
-                <td>@d.Substring(d.LastIndexOf("\\") + 1)</td><td><a href="/Content/Images\@d.Substring(d.LastIndexOf("\\") + 1)" download>Download</a></td>
+                foreach (String d in ViewBag.Files){
+            <tr>@Html.AntiForgeryToken()
+                <td>@d.Substring(d.LastIndexOf("\\") + 1)</td>
+                <td><a href="/Downloads/Files?FileName=@d.Substring(d.LastIndexOf("\\") + 1)">Download</a></td>
             </tr>
             }
             }
-        </tbody>
+        </tbody> 
+
 
     </table>
 

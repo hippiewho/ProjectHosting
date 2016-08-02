@@ -7,7 +7,7 @@
 
 <h2>Login</h2>
 
-@using (Html.BeginForm("Login", "Login", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
+@using (Html.BeginForm("Login", "Login", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
 {
     @Html.AntiForgeryToken()
     <div class="form-horizontal">
@@ -17,14 +17,14 @@
         <div class="form-group">
             @Html.LabelFor(Model => Model.UserName, new { @class = "control-label col-md-2"})
             <div class="col-md-10">
-                @Html.TextBoxFor(Model => Model.UserName, new { @class = "col-md-2 control-label"})
+                @Html.EditorFor(Model => Model.UserName, new { @class = "col-md-2 control-label"})
                 @Html.ValidationMessageFor(Model => Model.UserName, "" , new { @class = "text-danger"})
             </div>
         </div>
         <div class="form-group">
             @Html.LabelFor(Model => Model.Password, new { @class = "control-label col-md-2"})
             <div class="col-md-10">
-                @Html.TextBoxFor(Model => Model.Password, new { @class = "col-md-2 control-label"})
+                @Html.EditorFor(Model => Model.Password, new { @class = "col-md-2 control-label"})
                 @Html.ValidationMessageFor(Model => Model.Password, "" , new { @class = "text-danger"})
             </div>
         </div>
