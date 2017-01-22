@@ -44,6 +44,7 @@ namespace myWebsite.Controllers
                     claims.Add(new Claim(ClaimTypes.Name, ValidUser.Name));
                     var identity = new ClaimsIdentity(claims, DefaultAuthenticationTypes.ApplicationCookie);
                     System.Web.HttpContext.Current.GetOwinContext().Authentication.SignIn(identity);
+                    LC.Dispose();
                     return Redirect("Index");
                   }
             }
@@ -100,16 +101,21 @@ namespace myWebsite.Controllers
 
             if (ModelState.IsValid)
             {
-                loginModel.Password = Crypto.HashPassword(loginModel.Password);
-                db.UserList.Add(loginModel);
-                db.SaveChanges();
+                LoginContext LC = new Models.LoginContext();
+                
+                if (!LC.UserList.Contains<String>(loginModel.UserName))
+                {
+                    loginModel.Password = Crypto.HashPassword(loginModel.Password);
+                    db.UserList.Add(loginModel);
+                    db.SaveChanges();
+                }
             }
             if (Request.IsAuthenticated)
             {
-                return View(loginModel);
+                return Redirect("Index");
             } else
             {
-                return Login(loginModel);
+                return Redirect("Login");
             }
         }
 
