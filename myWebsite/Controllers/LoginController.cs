@@ -10,8 +10,6 @@ using Microsoft.AspNet.Identity.Owin;
 using System.Web;
 using System.Web.Helpers;
 
-//using System.IdentityModel.Claims;
-
 namespace myWebsite.Controllers
 {
     [Authorize]
@@ -35,13 +33,17 @@ namespace myWebsite.Controllers
             LoginContext LC = new LoginContext();
             try
             {
-                //LoginModel ValidUser = LC.UserList.Single(Person => Person.UserName == UserName && Person.Password == Password);
                 LoginModel ValidUser = LC.UserList.Single(Person => Person.UserName == model.UserName);
+                bool isValid = ValidUser != null;
+                bool isVerifiedPassowrd = Crypto.VerifyHashedPassword(ValidUser.Password, model.Password);
 
-                if (ValidUser != null && Crypto.VerifyHashedPassword(ValidUser.Password, model.Password))
+
+                if (isValid && isVerifiedPassowrd)
                 {
-                    var claims = new List<Claim>();
-                    claims.Add(new Claim(ClaimTypes.Name, ValidUser.Name));
+                    var claims = new List<Claim>
+                    {
+                        new Claim(ClaimTypes.Name, ValidUser.Name)
+                    };
                     var identity = new ClaimsIdentity(claims, DefaultAuthenticationTypes.ApplicationCookie);
                     System.Web.HttpContext.Current.GetOwinContext().Authentication.SignIn(identity);
                     LC.Dispose();
@@ -102,21 +104,35 @@ namespace myWebsite.Controllers
             if (ModelState.IsValid)
             {
                 LoginContext LC = new Models.LoginContext();
-                
-                if (!LC.UserList.Contains<String>(loginModel.UserName))
+                var EmailCheck = LC.UserList
+                             .Where(User => User.Email == loginModel.Email)
+                             .FirstOrDefault();
+                var UserNameCheck = LC.UserList
+                             .Where(User => User.UserName == loginModel.UserName)
+                             .FirstOrDefault();
+
+                bool isEmailInDatabase = EmailCheck != null;
+                bool isUserNameInDatabase = UserNameCheck != null;
+
+
+
+                if (!isEmailInDatabase && !isUserNameInDatabase)
                 {
+                    String unecryptedPassword = loginModel.Password;
                     loginModel.Password = Crypto.HashPassword(loginModel.Password);
                     db.UserList.Add(loginModel);
                     db.SaveChanges();
+                    loginModel.Password = unecryptedPassword;
+                    return Login(loginModel);
+                } else
+                {
+                    if (isEmailInDatabase) ViewBag.UserNameError = "User Name in use!";
+                    if (isUserNameInDatabase) ViewBag.EmailError = "Email already in use!";
                 }
+
             }
-            if (Request.IsAuthenticated)
-            {
-                return Redirect("Index");
-            } else
-            {
-                return Redirect("Login");
-            }
+
+            return View();
         }
 
         // GET: Login/Edit/5

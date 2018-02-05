@@ -6,10 +6,23 @@
 
 <h2>Create</h2>
 
-@using (Html.BeginForm()) 
+@{
+<ul>
+    @if (ViewBag.EmailError != null)
+    {
+        <li><strong class="alert-warning">@ViewBag.EmailError</strong></li>
+    }
+    @if (ViewBag.UserNameError != null)
+    {
+        <li><strong class="alert-warning">@ViewBag.UserNameError</strong></li>
+    }
+</ul>
+}
+
+@using (Html.BeginForm())
 {
     @Html.AntiForgeryToken()
-    
+
     <div class="form-horizontal">
         <h4>LoginModel</h4>
         <hr />
