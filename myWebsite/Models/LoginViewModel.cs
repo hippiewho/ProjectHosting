@@ -40,8 +40,6 @@ namespace myWebsite.Models
         [DataType(DataType.Text)]
         [Display(Name = "UserName")]
         public string UserName { get; set; }
-
-
     }
 
     public class RegisterModel
