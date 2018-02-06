@@ -46,7 +46,6 @@ namespace myWebsite.Controllers
                     };
                     var identity = new ClaimsIdentity(claims, DefaultAuthenticationTypes.ApplicationCookie);
                     System.Web.HttpContext.Current.GetOwinContext().Authentication.SignIn(identity);
-                    LC.Dispose();
                     return Redirect("Index");
                   }
             }
@@ -54,6 +53,10 @@ namespace myWebsite.Controllers
             {
                 var GenericErrorMessage = "Error Occured: " + e.ToString();
                 Console.WriteLine(GenericErrorMessage);
+            }
+            finally
+            {
+                LC.Dispose();
             }
             return View(model);
         }
@@ -103,17 +106,15 @@ namespace myWebsite.Controllers
 
             if (ModelState.IsValid)
             {
-                LoginContext LC = new Models.LoginContext();
-                var EmailCheck = LC.UserList
+                var EmailCheck = db.UserList
                              .Where(User => User.Email == loginModel.Email)
                              .FirstOrDefault();
-                var UserNameCheck = LC.UserList
+                var UserNameCheck = db.UserList
                              .Where(User => User.UserName == loginModel.UserName)
                              .FirstOrDefault();
-
+                
                 bool isEmailInDatabase = EmailCheck != null;
                 bool isUserNameInDatabase = UserNameCheck != null;
-
 
 
                 if (!isEmailInDatabase && !isUserNameInDatabase)
@@ -126,9 +127,10 @@ namespace myWebsite.Controllers
                     return Login(loginModel);
                 } else
                 {
-                    if (isEmailInDatabase) ViewBag.UserNameError = "User Name in use!";
-                    if (isUserNameInDatabase) ViewBag.EmailError = "Email already in use!";
+                    if (isUserNameInDatabase) ViewBag.UserNameError = "User Name already in use!";
+                    if (isEmailInDatabase) ViewBag.EmailError = "Email already in use!";
                 }
+                
 
             }
 
@@ -142,12 +144,15 @@ namespace myWebsite.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            LoginModel loginModel = db.UserList.Find(id);
-            if (loginModel == null)
+            else
             {
-                return HttpNotFound();
+                LoginModel loginModel = db.UserList.Find(id);
+                if (loginModel == null)
+                {
+                    return HttpNotFound();
+                }
+                return View(loginModel);
             }
-            return View(loginModel);
         }
 
         // POST: Login/Edit/5

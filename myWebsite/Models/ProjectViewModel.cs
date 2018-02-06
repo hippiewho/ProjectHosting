@@ -12,12 +12,12 @@ namespace myWebsite.Models
 {
     public class ProjectContext : DbContext
     {
-        public DbSet<ProjectViewModel> ProjectList { get; set; }
+        public DbSet<ProjectModel> ProjectList { get; set; }
 
     }
 
     [Table("Projects")]
-    public class ProjectViewModel
+    public class ProjectModel
     {
         [Required]
         [Display(Name = "Id")]
