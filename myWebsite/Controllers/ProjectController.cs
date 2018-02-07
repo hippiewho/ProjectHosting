@@ -4,6 +4,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using System.Net;
+using System.Net.Http;
+using System.Threading.Tasks;
 
 namespace myWebsite.Controllers
 {
@@ -12,11 +15,30 @@ namespace myWebsite.Controllers
         private ProjectContext PC = new ProjectContext();
         // GET: Project
         
-        public ActionResult Project(string id)
+        public async Task<ActionResult> Project(int? id)
         {
+            if (id == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+            else
+            {
+                ProjectModel projectModel = PC.ProjectList.Where(modelItem =>modelItem.Id == id).FirstOrDefault();
+                if (projectModel == null)
+                {
+                    return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                } else
+                {
+                    HttpClient httpClient = new HttpClient();
+                    httpClient.DefaultRequestHeaders.Add("User-Agent", "Franks Server");
+                    var apiCallResponse = await httpClient.GetStringAsync("Https://api.github.com/repos/hippiewho/rccontroller/commits");
+                    JsonObject json = new JsonObject(apiCallResponse);
 
-            ViewBag.Title = "Projects";
-            return View();
+                    return View();
+                }
+                
+            }
+
         }
 
         // GET: Project/Index
@@ -31,7 +53,7 @@ namespace myWebsite.Controllers
         {
             if (id == null)
             {
-                return new HttpStatusCodeResult(System.Net.HttpStatusCode.BadRequest);
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
             else
             {
