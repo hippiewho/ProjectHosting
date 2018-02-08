@@ -7,14 +7,24 @@ using System.Web.Mvc;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
+using Microsoft.AspNet.Identity.Owin;
+using Microsoft.AspNet.Identity;
+using Microsoft.Owin;
+using myWebsite.Models;
+using Microsoft.AspNet.Identity.EntityFramework;
 
 namespace myWebsite.Controllers
 {
     public class ProjectsController : Controller
     {
         private ProjectContext PC = new ProjectContext();
-        // GET: Project
+
+        public ProjectsController()
+        {
+
+        }
         
+        // GET: Projects/Project
         public async Task<ActionResult> Project(int? id)
         {
             if (id == null)
@@ -31,10 +41,14 @@ namespace myWebsite.Controllers
                 {
                     HttpClient httpClient = new HttpClient();
                     httpClient.DefaultRequestHeaders.Add("User-Agent", "Franks Server");
-                    var apiCallResponse = await httpClient.GetStringAsync("Https://api.github.com/repos/hippiewho/rccontroller/commits");
+                    //
+
+                    
+                    //
+                    var apiCallResponse = await httpClient.GetStringAsync("Https://api.github.com/repos/"+  +"/" + projectModel.Name + "/commits");
                     JsonObject json = new JsonObject(apiCallResponse);
 
-                    return View();
+                    return View(json.commits);
                 }
                 
             }

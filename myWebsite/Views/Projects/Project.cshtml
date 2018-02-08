@@ -1,14 +1,14 @@
 ﻿@{ 
-    /* 
-     Project page heading should be replaces with the name of the project in final release
-     Page should show revision events as well as the download link to allow for review.
-     Later iteration of this page will have hidden information on this page. Hidden information will
-     include but not be limited to the download link, revisor and statistics as well as extended bug
-     information.
-     Ill parse from github at a later time.
-    */
+/* 
+ Project page heading should be replaces with the name of the project in final release
+ Page should show revision events as well as the download link to allow for review.
+ Later iteration of this page will have hidden information on this page. Hidden information will
+ include but not be limited to the download link, revisor and statistics as well as extended bug
+ information.
+ Ill parse from github at a later time.
+*/
 }
-@model String
+@model IEnumerable<myWebsite.Models.CommitObject>
 
 <head>
     <link rel="stylesheet" type="text/css" href="~/Content/bootstrap.css" />
@@ -22,6 +22,19 @@
     <div class="row">
         <div class="pull-xs-left well col-md-6">
             <h3>Revision history:</h3>
+            <ul>
+                @foreach (var i in Model)
+                {
+                    <li>Author: @i.Author</li>
+                    <ul>
+                        <li>Commit SHA: @i.Sha</li>
+                        <li>Commit Date: @i.Date</li>
+                        <li>Commit Message: @i.Message</li>
+                    </ul>
+                    <br />
+                }
+
+            </ul>
             
         </div>
         <div class="pull-xs-right well col-md-6">

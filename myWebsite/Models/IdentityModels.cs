@@ -14,10 +14,10 @@ namespace myWebsite.Models
             return await manager.CreateIdentityAsync(this, DefaultAuthenticationTypes.ApplicationCookie);
         }
 
-        public static explicit operator ApplicationUser(UserManager<ApplicationUser, string> v)
-        {
-            throw new NotImplementedException();
-        }
+        //public static explicit operator ApplicationUser(UserManager<ApplicationUser, string> v)
+        //{
+        //    throw new NotImplementedException();
+        //}
     }
 
     public class ApplicationDBContext : IdentityDbContext<ApplicationUser>

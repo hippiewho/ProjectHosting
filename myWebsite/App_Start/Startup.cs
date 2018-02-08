@@ -17,7 +17,9 @@ namespace myWebsite.App_Start
                 SlidingExpiration = true,
                 AuthenticationType = DefaultAuthenticationTypes.ApplicationCookie,
                 AuthenticationMode = AuthenticationMode.Active
+
             });
+
         }
     }
 }
