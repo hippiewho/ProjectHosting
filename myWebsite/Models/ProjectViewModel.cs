@@ -47,5 +47,11 @@ namespace myWebsite.Models
         [DataType(DataType.Text)]
         [Display(Name = "Position")]
         public byte Position { get; set; }
+
+        [Required]
+        [DataType(DataType.Text)]
+        [Display(Name = "UserId")]
+        public int UserId { get; set; }
+
     }
 }

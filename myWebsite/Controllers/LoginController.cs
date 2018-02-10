@@ -30,6 +30,7 @@ namespace myWebsite.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Login(LoginModel model)
         {
+            
             LoginContext LC = new LoginContext();
             try
             {
@@ -124,7 +125,13 @@ namespace myWebsite.Controllers
                     db.UserList.Add(loginModel);
                     db.SaveChanges();
                     loginModel.Password = unecryptedPassword;
-                    return Login(loginModel);
+                    if (Request.IsAuthenticated)
+                    {
+                        return Redirect("Index");
+                    } else
+                    {
+                        return Login(loginModel);
+                    }
                 } else
                 {
                     if (isUserNameInDatabase) ViewBag.UserNameError = "User Name already in use!";
@@ -162,6 +169,7 @@ namespace myWebsite.Controllers
         {
             if (ModelState.IsValid)
             {
+                loginModel.Password = Crypto.HashPassword(loginModel.Password);
                 db.Entry(loginModel).State = System.Data.Entity.EntityState.Modified;
                 db.SaveChanges();
                 return RedirectToAction("Index");

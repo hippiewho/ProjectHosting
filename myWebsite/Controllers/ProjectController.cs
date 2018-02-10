@@ -39,16 +39,24 @@ namespace myWebsite.Controllers
                     return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
                 } else
                 {
-                    HttpClient httpClient = new HttpClient();
-                    httpClient.DefaultRequestHeaders.Add("User-Agent", "Franks Server");
-                    //
+                    LoginContext loginContext = new LoginContext();
+                    LoginModel loginModel = loginContext.UserList.Where(loginItem => loginItem.ID == projectModel.UserId).FirstOrDefault();
+                    if (loginModel != null)
+                    {
+                        HttpClient httpClient = new HttpClient();
+                        httpClient.DefaultRequestHeaders.Add("User-Agent", "Franks Server");
+                        string httprequeststring = "Https://api.github.com/repos/" + loginModel.UserName.Trim() + "/" + projectModel.Name.Trim() + "/commits";
+                        var apiCallResponse = await httpClient.GetStringAsync(httprequeststring);
+                        JsonObject json = new JsonObject(apiCallResponse);
 
-                    
-                    //
-                    var apiCallResponse = await httpClient.GetStringAsync("Https://api.github.com/repos/"+  +"/" + projectModel.Name + "/commits");
-                    JsonObject json = new JsonObject(apiCallResponse);
+                        loginContext.Dispose();
+                        return View(json.commits);
+                    }
+                    else
+                    {
+                        return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                    }
 
-                    return View(json.commits);
                 }
                 
             }
@@ -61,7 +69,8 @@ namespace myWebsite.Controllers
         {
             return View(PC.ProjectList.ToList());
         }
-        // GET: Project/Edit
+
+        // GET: Projects/Edit
         [Authorize]
         public ActionResult Edit(int? id)
         {
@@ -79,6 +88,8 @@ namespace myWebsite.Controllers
                 return View(projectModel);
             }
         }
+
+        // POST: Projects/Edit
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize]
@@ -92,5 +103,42 @@ namespace myWebsite.Controllers
             }
             return View(projectModel);
         }
+
+        // GET: Projects/Create
+        [Authorize]
+        public ActionResult Create()
+        {
+            return View();
+        }
+
+        // POST: Projects/Create
+        [Authorize]
+        [HttpPost]
+        public ActionResult Create([Bind(Include = "Id, Name, Description, Url, ImagePath, Position, UserId")] ProjectModel projectModel)
+        {
+            if (ModelState.IsValid)
+            {
+                LoginContext loginContext = new LoginContext();
+                LoginModel loginModel = loginContext.UserList.Where(loginItem => loginItem.UserName == projectModel.UserId);
+                if (loginModel != null)
+                {
+
+                }
+                PC.ProjectList.Add(projectModel);
+                PC.SaveChanges();
+            }
+            return Redirect("Index");
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                PC.Dispose();
+            }
+            base.Dispose(disposing);
+        }
     }
+
+   
 }
