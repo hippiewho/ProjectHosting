@@ -276,6 +276,7 @@
     </Compile>
     <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Models\LoginViewModel.cs" />
+    <Compile Include="Models\ProjectHelperClass.cs" />
     <Compile Include="Models\ProjectViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -315,6 +316,7 @@
     <Content Include="Views\Projects\Index.cshtml" />
     <Content Include="Views\Projects\Edit.cshtml" />
     <Content Include="Views\Projects\Create.cshtml" />
+    <Content Include="Views\Projects\ProjectDetails.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

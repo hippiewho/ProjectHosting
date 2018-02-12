@@ -18,6 +18,7 @@ namespace myWebsite.Controllers
     public class ProjectsController : Controller
     {
         private ProjectContext PC = new ProjectContext();
+        private LoginContext LC = new LoginContext();
 
         public ProjectsController()
         {
@@ -39,8 +40,7 @@ namespace myWebsite.Controllers
                     return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
                 } else
                 {
-                    LoginContext loginContext = new LoginContext();
-                    LoginModel loginModel = loginContext.UserList.Where(loginItem => loginItem.ID == projectModel.UserId).FirstOrDefault();
+                    LoginModel loginModel = LC.UserList.Where(loginItem => loginItem.ID == projectModel.UserId).FirstOrDefault();
                     if (loginModel != null)
                     {
                         HttpClient httpClient = new HttpClient();
@@ -49,7 +49,6 @@ namespace myWebsite.Controllers
                         var apiCallResponse = await httpClient.GetStringAsync(httprequeststring);
                         JsonObject json = new JsonObject(apiCallResponse);
 
-                        loginContext.Dispose();
                         return View(json.commits);
                     }
                     else
@@ -93,7 +92,7 @@ namespace myWebsite.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize]
-        public ActionResult Edit([Bind(Include = "Id, Name, Description, Url, ImagePath, Position")] ProjectModel projectModel)
+        public ActionResult Edit(ProjectModel projectModel)
         {
             if (ModelState.IsValid)
             {
@@ -108,26 +107,66 @@ namespace myWebsite.Controllers
         [Authorize]
         public ActionResult Create()
         {
-            return View();
+            ProjectHelperClass model = new ProjectHelperClass();
+            ConfigureHelperClass(model);
+
+            return View(model);
+        }
+
+        private void ConfigureHelperClass(ProjectHelperClass model)
+        {
+            model.UserSelectList = LC.UserList.Select(m => new SelectListItem
+            {
+                Value = m.ID.ToString(),
+                Text = m.UserName
+            });
         }
 
         // POST: Projects/Create
         [Authorize]
         [HttpPost]
-        public ActionResult Create([Bind(Include = "Id, Name, Description, Url, ImagePath, Position, UserId")] ProjectModel projectModel)
+        public ActionResult Create( ProjectHelperClass model )
         {
             if (ModelState.IsValid)
             {
-                LoginContext loginContext = new LoginContext();
-                LoginModel loginModel = loginContext.UserList.Where(loginItem => loginItem.UserName == projectModel.UserId);
-                if (loginModel != null)
+                ProjectModel project = new ProjectModel
                 {
+                    Name = model.Name,
+                    Description = model.Description,
+                    Url = model.Url,
+                    ImagePath = model.ImagePath,
+                    Position = model.Position,
+                    UserId = model.UserId
+                };
 
+                if (project != null)
+                {
+                    PC.ProjectList.Add(project);
+                    PC.SaveChanges();
                 }
-                PC.ProjectList.Add(projectModel);
-                PC.SaveChanges();
+                return Redirect("Index");
+            } else
+            {
+                ConfigureHelperClass(model);
+                return View(model);
             }
-            return Redirect("Index");
+        }
+
+        public ActionResult ProjectDetails(int? id)
+        {
+            if (id == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            } else
+            {
+                ProjectModel project = PC.ProjectList.Where(modelItem => modelItem.Id == id).FirstOrDefault();
+                if (project == null)
+                {
+                    return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                }
+                return View(project);
+            }
+
         }
 
         protected override void Dispose(bool disposing)
@@ -135,6 +174,7 @@ namespace myWebsite.Controllers
             if (disposing)
             {
                 PC.Dispose();
+                LC.Dispose();
             }
             base.Dispose(disposing);
         }
