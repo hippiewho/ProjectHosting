@@ -10,7 +10,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNet.Identity.Owin;
 using Microsoft.AspNet.Identity;
 using Microsoft.Owin;
-using myWebsite.Models;
 using Microsoft.AspNet.Identity.EntityFramework;
 
 namespace myWebsite.Controllers
@@ -47,9 +46,9 @@ namespace myWebsite.Controllers
                         httpClient.DefaultRequestHeaders.Add("User-Agent", "Franks Server");
                         string httprequeststring = "Https://api.github.com/repos/" + loginModel.UserName.Trim() + "/" + projectModel.Name.Trim() + "/commits";
                         var apiCallResponse = await httpClient.GetStringAsync(httprequeststring);
-                        JsonObject json = new JsonObject(apiCallResponse);
+                        JsonObject json = new JsonObject(apiCallResponse, projectModel.Name, projectModel.Description, projectModel.Url, projectModel.ImagePath);
 
-                        return View(json.commits);
+                        return View(json);
                     }
                     else
                     {
