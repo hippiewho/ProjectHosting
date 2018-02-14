@@ -29,9 +29,9 @@
             <ul>
                 @foreach (var i in Model.Commits)
                 {
-                    <li>Author: @i.Author</li>
+                    <li >Author: @i.Author</li>
                     <ul>
-                        <li>Commit SHA: @i.Sha</li>
+                        <li class="CommitArea">Commit SHA: @i.Sha</li>
                         <li>Commit Date: @i.Date</li>
                         <li>Commit Message: @i.Message</li>
                     </ul>

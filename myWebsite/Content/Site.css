@@ -16,3 +16,14 @@ textarea {
     max-width: 280px;
 }
 
+.CommitArea {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    width: 100%;
+    display: block;
+}
+
+.MainProjectRow {
+    padding-top:2em;
+}
