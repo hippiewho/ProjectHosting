@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json.Linq;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -20,6 +21,16 @@ namespace myWebsite.Models
         public IEnumerable<CommitObject> Commits { get => commits;}
         public string ProjectImagePath { get => projectImagePath; }
 
+        public JsonObject()
+        {
+            this.RawJson = "";
+            this.commits = ParseJson("");
+            this.projectName = "";
+            this.projectDescription = "";
+            this.projectURL = "";
+            this.projectImagePath = "";
+        }
+
         public JsonObject(string jsonString)
         {
             this.RawJson = jsonString;
@@ -39,12 +50,18 @@ namespace myWebsite.Models
         private IEnumerable<CommitObject> ParseJson(string jsonString)
         {
             List<CommitObject> commits = new List<CommitObject>();
-            JArray json = JArray.Parse(jsonString);
-            
-            foreach(JToken item in json)
+            try
             {
-                commits.Add(new CommitObject(item));
+                JArray json = JArray.Parse(jsonString);
+                foreach(JToken item in json)
+                {
+                    commits.Add(new CommitObject(item));
+                }
+            } catch (Exception e)
+            {
+                
             }
+            
             return commits;
         }
     }

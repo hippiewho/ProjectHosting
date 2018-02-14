@@ -15,7 +15,7 @@ namespace myWebsite.Controllers
     [Authorize]
     public class LoginController : Controller
     {
-        private LoginContext db = new LoginContext();
+        private LoginContext LC = new LoginContext();
         public LoginController(){}
 
         [AllowAnonymous]
@@ -31,7 +31,6 @@ namespace myWebsite.Controllers
         public ActionResult Login(LoginModel model)
         {
             
-            LoginContext LC = new LoginContext();
             try
             {
                 LoginModel ValidUser = LC.UserList.Single(Person => Person.UserName == model.UserName);
@@ -55,11 +54,8 @@ namespace myWebsite.Controllers
                 var GenericErrorMessage = "Error Occured: " + e.ToString();
                 Console.WriteLine(GenericErrorMessage);
             }
-            finally
-            {
-                LC.Dispose();
-            }
-            return View(model);
+            ViewBag.IncorrectLogin = "Credentials Incorrect.";
+            return View();
         }
 
         // GET : Log off
@@ -74,7 +70,7 @@ namespace myWebsite.Controllers
         [Authorize]
         public ActionResult Index()
         {
-            return View(db.UserList.ToList());
+            return View(LC.UserList.ToList());
         }
 
         // GET: Login/Details/5
@@ -84,7 +80,7 @@ namespace myWebsite.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            LoginModel loginModel = db.UserList.Find(id);
+            LoginModel loginModel = LC.UserList.Find(id);
             if (loginModel == null)
             {
                 return HttpNotFound();
@@ -107,10 +103,10 @@ namespace myWebsite.Controllers
 
             if (ModelState.IsValid)
             {
-                var EmailCheck = db.UserList
+                var EmailCheck = LC.UserList
                              .Where(User => User.Email == loginModel.Email)
                              .FirstOrDefault();
-                var UserNameCheck = db.UserList
+                var UserNameCheck = LC.UserList
                              .Where(User => User.UserName == loginModel.UserName)
                              .FirstOrDefault();
                 
@@ -122,8 +118,8 @@ namespace myWebsite.Controllers
                 {
                     String unecryptedPassword = loginModel.Password;
                     loginModel.Password = Crypto.HashPassword(loginModel.Password);
-                    db.UserList.Add(loginModel);
-                    db.SaveChanges();
+                    LC.UserList.Add(loginModel);
+                    LC.SaveChanges();
                     loginModel.Password = unecryptedPassword;
                     if (Request.IsAuthenticated)
                     {
@@ -153,7 +149,7 @@ namespace myWebsite.Controllers
             }
             else
             {
-                LoginModel loginModel = db.UserList.Find(id);
+                LoginModel loginModel = LC.UserList.Find(id);
                 if (loginModel == null)
                 {
                     return HttpNotFound();
@@ -170,8 +166,8 @@ namespace myWebsite.Controllers
             if (ModelState.IsValid)
             {
                 loginModel.Password = Crypto.HashPassword(loginModel.Password);
-                db.Entry(loginModel).State = System.Data.Entity.EntityState.Modified;
-                db.SaveChanges();
+                LC.Entry(loginModel).State = System.Data.Entity.EntityState.Modified;
+                LC.SaveChanges();
                 return RedirectToAction("Index");
             }
             return View(loginModel);
@@ -184,7 +180,7 @@ namespace myWebsite.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            LoginModel loginModel = db.UserList.Find(id);
+            LoginModel loginModel = LC.UserList.Find(id);
             if (loginModel == null)
             {
                 return HttpNotFound();
@@ -197,9 +193,9 @@ namespace myWebsite.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
         {
-            LoginModel loginModel = db.UserList.Find(id);
-            db.UserList.Remove(loginModel);
-            db.SaveChanges();
+            LoginModel loginModel = LC.UserList.Find(id);
+            LC.UserList.Remove(loginModel);
+            LC.SaveChanges();
             return RedirectToAction("Index");
         }
 
@@ -207,7 +203,7 @@ namespace myWebsite.Controllers
         {
             if (disposing)
             {
-                db.Dispose();
+                LC.Dispose();
             }
             base.Dispose(disposing);
         }

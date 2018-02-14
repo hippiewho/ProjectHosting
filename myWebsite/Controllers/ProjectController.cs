@@ -45,9 +45,16 @@ namespace myWebsite.Controllers
                         HttpClient httpClient = new HttpClient();
                         httpClient.DefaultRequestHeaders.Add("User-Agent", "Franks Server");
                         string httprequeststring = "Https://api.github.com/repos/" + loginModel.UserName.Trim() + "/" + projectModel.Name.Trim() + "/commits";
-                        var apiCallResponse = await httpClient.GetStringAsync(httprequeststring);
-                        JsonObject json = new JsonObject(apiCallResponse, projectModel.Name, projectModel.Description, projectModel.Url, projectModel.ImagePath);
-
+                        JsonObject json;
+                        try
+                        {
+                            var apiCallResponse = await httpClient.GetStringAsync(httprequeststring);
+                            json = new JsonObject(apiCallResponse, projectModel.Name, projectModel.Description, projectModel.Url, projectModel.ImagePath);
+                        }
+                        catch (Exception e)
+                        {
+                            json = new JsonObject();
+                        }
                         return View(json);
                     }
                     else

@@ -35,16 +35,23 @@
         <div class="pull-xs-right well col-md-6">
             <h3>Revision / Commit history:</h3>
             <ul>
-                @foreach (var i in Model.Commits)
-            {
-                <li>Author: @i.Author</li>
-                <ul>
-                    <li class="CommitArea">Commit SHA: @i.Sha</li>
-                    <li>Commit Date: @i.Date</li>
-                    <li>Commit Message: @i.Message</li>
-                </ul>
-                <br />
-        }
+                @if (Model.Commits.Count() > 0)
+    {
+            foreach (var i in Model.Commits)
+{
+            <li>Author: @i.Author</li>
+            <ul>
+                <li class="CommitArea">Commit SHA: @i.Sha</li>
+                <li>Commit Date: @i.Date</li>
+                <li>Commit Message: @i.Message</li>
+            </ul>
+            <br />
+}
+}
+else
+{
+            <li>Error Retreiving Project Information</li>
+}
 
             </ul>
 

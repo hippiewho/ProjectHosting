@@ -4,7 +4,7 @@
     ViewBag.Title = "Index";
 }
 
-<h2>Index</h2>
+<h2>Project Managment</h2>
 
 <p>
     @Html.ActionLink("Create New", "Create")
@@ -32,7 +32,7 @@
 @foreach (var item in Model) {
     <tr>
         <td>
-            @Html.DisplayFor(modelItem => item.Name)
+            <a href="./Projects/Project/@item.Id">@Html.DisplayFor(modelItem => item.Name) </a>
         </td>
         <td>
             @Html.DisplayFor(modelItem => item.Description)
