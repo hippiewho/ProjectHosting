@@ -161,6 +161,7 @@ namespace myWebsite.Controllers
             }
         }
 
+        // GET: Projects/ProjectDetails/id
         public ActionResult ProjectDetails(int? id)
         {
             if (id == null)
@@ -176,6 +177,8 @@ namespace myWebsite.Controllers
                 return View(project);
             }
         }
+
+        // GET: Projects/UploadImage
         [Authorize]
         public ActionResult UploadImage()
         {
@@ -186,19 +189,19 @@ namespace myWebsite.Controllers
             return View();
         }
 
-        
+        // POST: Projects/UploadImage
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize]
         public string UploadImage(HttpPostedFileBase file)
         {
-            if (file != null && file.ContentLength > 0 && file.ContentLength < 20970000)
+            if (file != null && file.ContentLength > 0 && file.ContentLength < 20970000 && file.ContentType.Contains("image"))
             {
                 String filename = Path.GetFileName(file.FileName);
                 String folderPath = Path.Combine(Server.MapPath("~/Content/Images"), filename);
                 file.SaveAs(folderPath);
                 return "True";
-            }       
+            }    
             return "Something Went Horribly Wrong!! or image is too large..";
 
         }

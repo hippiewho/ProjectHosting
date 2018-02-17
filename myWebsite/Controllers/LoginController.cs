@@ -34,7 +34,9 @@ namespace myWebsite.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Login(LoginModel model)
         {
-            
+            string qString = Request.QueryString["ReturnUrl"];
+            string redirectUrl = (qString == null ) ? "/Login/Index" : Request.QueryString["ReturnUrl"];
+
             try
             {
                 LoginModel ValidUser = LC.UserList.Single(Person => Person.UserName == model.UserName);
@@ -50,7 +52,7 @@ namespace myWebsite.Controllers
                     };
                     var identity = new ClaimsIdentity(claims, DefaultAuthenticationTypes.ApplicationCookie);
                     System.Web.HttpContext.Current.GetOwinContext().Authentication.SignIn(identity);
-                    return Redirect("Index");
+                    return Redirect(redirectUrl);
                   }
             }
             catch (Exception e)

@@ -18,7 +18,7 @@
                 
                 <div class="form-group">
                     <p>@ViewBag.FileSizeLimit</p>
-                    <input type="file" name="file" />
+                    <input type="file" name="file" accept="image/*"/>
                 </div>
 
                 <br />
@@ -58,11 +58,9 @@
                     if (xhr.responseText == "True") {
                         status.html("Sucess!");
                     } else {
-                        status.html("Something Went Horribly Wrong!! or image is too large..");
+                        status.html("Something Went Horribly Wrong!! or image is too large.. or not an Image!");
                     }
                 }
-                
             });
-
         })();
     </script>

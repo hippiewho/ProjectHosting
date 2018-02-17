@@ -2,12 +2,11 @@
 
 @{
     ViewBag.Title = "Login";
-    ViewBag.ReturnUrl = "Index";
 }
 
 <h2>Admin Login</h2>
 
-@using (Html.BeginForm("Login", "Login", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
+@using (Html.BeginForm("Login", "Login", new { ReturnUrl = Request.QueryString["ReturnUrl"]}, FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
 {
     @Html.AntiForgeryToken()
     <div class="form-horizontal">
