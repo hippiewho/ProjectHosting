@@ -22,6 +22,10 @@ namespace myWebsite.Controllers
         // GET: Login
         public ActionResult Login()
         {
+            if (Request.IsAuthenticated)
+            {
+                return Redirect("Index");
+            }
             return View();
         }
 

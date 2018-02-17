@@ -11,6 +11,9 @@ using Microsoft.AspNet.Identity.Owin;
 using Microsoft.AspNet.Identity;
 using Microsoft.Owin;
 using Microsoft.AspNet.Identity.EntityFramework;
+using System.IO;
+using System.Web.Configuration;
+using System.Configuration;
 
 namespace myWebsite.Controllers
 {
@@ -172,6 +175,31 @@ namespace myWebsite.Controllers
                 }
                 return View(project);
             }
+        }
+        [Authorize]
+        public ActionResult UploadImage()
+        {
+            Configuration config = WebConfigurationManager.OpenWebConfiguration("~");
+            HttpRuntimeSection section = config.GetSection("system.web/httpRuntime") as HttpRuntimeSection;
+            double maxFileSize = Math.Round(section.MaxRequestLength / 1024.0, 1);
+            ViewBag.FileSizeLimit = string.Format("Make sure your file is under {0:0.#} MB.", maxFileSize);
+            return View();
+        }
+
+        
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize]
+        public string UploadImage(HttpPostedFileBase file)
+        {
+            if (file != null && file.ContentLength > 0 && file.ContentLength < 20970000)
+            {
+                String filename = Path.GetFileName(file.FileName);
+                String folderPath = Path.Combine(Server.MapPath("~/Content/Images"), filename);
+                file.SaveAs(folderPath);
+                return "True";
+            }       
+            return "Something Went Horribly Wrong!! or image is too large..";
 
         }
 
