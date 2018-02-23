@@ -3,32 +3,21 @@
 @{
     ViewBag.Title = "Home";
 }
-
-    <div class="container marketing MainProjectRow" >
-
-        <!-- Three columns of text below the carousel -->
+    <div class="container MainProjectRow" >
         <div class="row">
             @foreach (var item in Model)
             {
-
                 <div class="col-lg-4">
-                    <img class="img-circle" src="@Html.DisplayFor(modelItem => item.ImagePath)" alt="@item.Name Image" width="140" height="140">
-                        <h2>@Html.DisplayFor(modelItem => item.Name)</h2>
+                    <img class="img-circle center-block" src="@Html.DisplayFor(modelItem => item.ImagePath)" alt="@item.Name Image" width="140" height="140">
+                        <h2 class="text-center">@Html.DisplayFor(modelItem => item.Name)</h2>
 
                         <p>@Html.DisplayFor(modelItem => item.Description)</p>
                     <p>@Html.ActionLink("View Details >>", "Project", "Projects", routeValues: new { id = item.Id}, htmlAttributes: new { id = item.Id, @class = "btn btn-default", @role = "button" })</p>
                 </div><!-- /.col-lg-4 -->
             }
-
-
         </div><!-- /.row -->
-
-
     </div><!-- /.container -->
-</body>
-<!-- Bootstrap core JavaScript
-================================================== -->
-<!-- Placed at the end of the document so the pages load faster -->
+
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
 <script>window.jQuery || document.write('<script src="../../assets/js/vendor/jquery.min.js"><\/script>')</script>
 <script src="~/Content/bootstrap.min.css"></script>

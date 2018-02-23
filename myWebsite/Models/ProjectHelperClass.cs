@@ -37,9 +37,11 @@ namespace myWebsite.Models
 
         public IEnumerable<SelectListItem> UserSelectList { get; set; }
 
+        public IEnumerable<SelectListItem> ImagePathSelectList { get; set; }
+
         public ProjectHelperClass( IEnumerable<SelectListItem> selectList)
         {
-            this.UserSelectList = selectList;
+            UserSelectList = selectList;
         }
 
         public ProjectHelperClass()

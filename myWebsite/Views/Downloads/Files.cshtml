@@ -10,22 +10,18 @@
 
     <table>
         <thead>
-            <tr><th>File Name</th><th>Download</th></tr>
+            <tr>
+                <th>File Name</th><th>Download</th>
+            </tr>
         </thead>
         <tbody>
-            @{ 
-                
-                foreach (String d in ViewBag.Files){
+          @foreach (String d in ViewBag.Files)
+          {
             <tr>@Html.AntiForgeryToken()
                 <td>@d.Substring(d.LastIndexOf("\\") + 1)</td>
                 <td><a href="/Downloads/Files?FileName=@d.Substring(d.LastIndexOf("\\") + 1)">Download</a></td>
             </tr>
-            }
-            }
+          }s        
         </tbody> 
-
-
     </table>
-
-
 </div>

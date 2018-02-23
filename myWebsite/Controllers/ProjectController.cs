@@ -1,16 +1,14 @@
 ﻿using myWebsite.Models;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
-using Microsoft.AspNet.Identity.Owin;
-using Microsoft.AspNet.Identity;
-using Microsoft.Owin;
-using Microsoft.AspNet.Identity.EntityFramework;
+
 using System.IO;
 using System.Web.Configuration;
 using System.Configuration;
@@ -22,11 +20,6 @@ namespace myWebsite.Controllers
         private ProjectContext PC = new ProjectContext();
         private LoginContext LC = new LoginContext();
 
-        public ProjectsController()
-        {
-
-        }
-        
         // GET: Projects/Project
         public async Task<ActionResult> Project(int? id)
         {
@@ -36,13 +29,13 @@ namespace myWebsite.Controllers
             }
             else
             {
-                ProjectModel projectModel = PC.ProjectList.Where(modelItem =>modelItem.Id == id).FirstOrDefault();
+                ProjectModel projectModel = PC.ProjectList.FirstOrDefault(modelItem => modelItem.Id == id);
                 if (projectModel == null)
                 {
                     return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
                 } else
                 {
-                    LoginModel loginModel = LC.UserList.Where(loginItem => loginItem.ID == projectModel.UserId).FirstOrDefault();
+                    LoginModel loginModel = LC.UserList.FirstOrDefault(loginItem => loginItem.ID == projectModel.UserId);
                     if (loginModel != null)
                     {
                         HttpClient httpClient = new HttpClient();
@@ -56,6 +49,7 @@ namespace myWebsite.Controllers
                         }
                         catch (Exception e)
                         {
+                            System.Diagnostics.Debug.WriteLine(e.ToString());
                             json = new JsonObject();
                         }
                         return View(json);
@@ -129,6 +123,14 @@ namespace myWebsite.Controllers
                 Value = m.ID.ToString(),
                 Text = m.UserName
             });
+            string ImageFolder = "/Content/Images/";
+            List<string> imagePathList = new List<string>(Directory.EnumerateFiles(Server.MapPath(ImageFolder)));
+
+            model.ImagePathSelectList = imagePathList.Select(m => new SelectListItem
+            {
+                Value = ImageFolder + m.Substring(m.LastIndexOf("\\", StringComparison.Ordinal) + 1),
+                Text = m.Substring(m.LastIndexOf("\\", StringComparison.Ordinal) + 1)
+            });
         }
 
         // POST: Projects/Create
@@ -148,11 +150,9 @@ namespace myWebsite.Controllers
                     UserId = model.UserId
                 };
 
-                if (project != null)
-                {
-                    PC.ProjectList.Add(project);
-                    PC.SaveChanges();
-                }
+                PC.ProjectList.Add(project);
+                PC.SaveChanges();
+                
                 return Redirect("Index");
             } else
             {
@@ -169,7 +169,7 @@ namespace myWebsite.Controllers
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             } else
             {
-                ProjectModel project = PC.ProjectList.Where(modelItem => modelItem.Id == id).FirstOrDefault();
+                ProjectModel project = PC.ProjectList.FirstOrDefault(modelItem => modelItem.Id == id);
                 if (project == null)
                 {
                     return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
@@ -183,9 +183,12 @@ namespace myWebsite.Controllers
         public ActionResult UploadImage()
         {
             Configuration config = WebConfigurationManager.OpenWebConfiguration("~");
-            HttpRuntimeSection section = config.GetSection("system.web/httpRuntime") as HttpRuntimeSection;
-            double maxFileSize = Math.Round(section.MaxRequestLength / 1024.0, 1);
-            ViewBag.FileSizeLimit = string.Format("Make sure your file is under {0:0.#} MB.", maxFileSize);
+            if (config.GetSection("system.web/httpRuntime") is HttpRuntimeSection section)
+            {
+                double maxFileSize = Math.Round(section.MaxRequestLength / 1024.0, 1);
+                ViewBag.FileSizeLimit = $"Make sure your file is under {maxFileSize:0.#} MB.";
+            }
+
             return View();
         }
 
@@ -198,8 +201,12 @@ namespace myWebsite.Controllers
             if (file != null && file.ContentLength > 0 && file.ContentLength < 20970000 && file.ContentType.Contains("image"))
             {
                 String filename = Path.GetFileName(file.FileName);
-                String folderPath = Path.Combine(Server.MapPath("~/Content/Images"), filename);
-                file.SaveAs(folderPath);
+                if (filename != null)
+                {
+                    String folderPath = Path.Combine(Server.MapPath("~/Content/Images"), filename);
+                    file.SaveAs(folderPath);
+                }
+
                 return "True";
             }    
             return "Something Went Horribly Wrong!! or image is too large..";
