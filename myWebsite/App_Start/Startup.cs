@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNet.Identity;
+﻿using System.Net;
+using Microsoft.AspNet.Identity;
 using Microsoft.Owin;
 using Microsoft.Owin.Security;
 using Owin;
@@ -19,7 +20,7 @@ namespace myWebsite.App_Start
                 AuthenticationMode = AuthenticationMode.Active
 
             });
-
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
         }
     }
 }

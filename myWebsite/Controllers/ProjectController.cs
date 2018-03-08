@@ -1,17 +1,16 @@
 ﻿using myWebsite.Models;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
+using System.Configuration;
+using System.IO;
 using System.Linq;
-using System.Web;
-using System.Web.Mvc;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 
-using System.IO;
+using System.Web;
 using System.Web.Configuration;
-using System.Configuration;
+using System.Web.Mvc;
 
 namespace myWebsite.Controllers
 {
@@ -33,7 +32,8 @@ namespace myWebsite.Controllers
                 if (projectModel == null)
                 {
                     return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-                } else
+                }
+                else
                 {
                     LoginModel loginModel = LC.UserList.FirstOrDefault(loginItem => loginItem.ID == projectModel.UserId);
                     if (loginModel != null)
@@ -50,7 +50,7 @@ namespace myWebsite.Controllers
                         catch (Exception e)
                         {
                             System.Diagnostics.Debug.WriteLine(e.ToString());
-                            json = new JsonObject();
+                            json = new JsonObject(projectModel.Name.Trim() , projectModel.ImagePath);
                         }
                         return View(json);
                     }
@@ -60,7 +60,7 @@ namespace myWebsite.Controllers
                     }
 
                 }
-                
+
             }
 
         }
@@ -136,7 +136,7 @@ namespace myWebsite.Controllers
         // POST: Projects/Create
         [Authorize]
         [HttpPost]
-        public ActionResult Create( ProjectHelperClass model )
+        public ActionResult Create(ProjectHelperClass model)
         {
             if (ModelState.IsValid)
             {
@@ -152,9 +152,10 @@ namespace myWebsite.Controllers
 
                 PC.ProjectList.Add(project);
                 PC.SaveChanges();
-                
+
                 return Redirect("Index");
-            } else
+            }
+            else
             {
                 ConfigureHelperClass(model);
                 return View(model);
@@ -167,7 +168,8 @@ namespace myWebsite.Controllers
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            } else
+            }
+            else
             {
                 ProjectModel project = PC.ProjectList.FirstOrDefault(modelItem => modelItem.Id == id);
                 if (project == null)
@@ -208,7 +210,7 @@ namespace myWebsite.Controllers
                 }
 
                 return "True";
-            }    
+            }
             return "Something Went Horribly Wrong!! or image is too large..";
 
         }
@@ -224,5 +226,5 @@ namespace myWebsite.Controllers
         }
     }
 
-   
+
 }

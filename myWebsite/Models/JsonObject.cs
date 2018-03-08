@@ -7,44 +7,47 @@ namespace myWebsite.Models
 {
     public class JsonObject
     {
-        private string projectName = "";
-        private string projectDescription = "";
-        private string projectURL = "";
-        private string projectImagePath = "";
-        private IEnumerable<CommitObject> commits;
+        private readonly string _projectName = "";
+        private readonly string _projectDescription = "";
+        private readonly string _projectUrl = "";
+        private readonly string _projectImagePath = "";
+        private readonly IEnumerable<CommitObject> _commits;
 
-        private object RawJson = "";
+        private object _rawJson = "";
 
-        public string ProjectName { get => projectName; }
-        public string ProjectDescription { get => projectDescription; }
-        public string ProjectURL { get => projectURL;}
-        public IEnumerable<CommitObject> Commits { get => commits;}
-        public string ProjectImagePath { get => projectImagePath; }
+        public string ProjectName { get => _projectName; }
+        public string ProjectDescription { get => _projectDescription; }
+        public string ProjectUrl { get => _projectUrl;}
+        public IEnumerable<CommitObject> Commits => _commits;
+        public string ProjectImagePath { get => _projectImagePath; }
 
         public JsonObject()
         {
-            this.RawJson = "";
-            this.commits = ParseJson("");
-            this.projectName = "";
-            this.projectDescription = "";
-            this.projectURL = "";
-            this.projectImagePath = "";
+            this._rawJson = "";
+            this._commits = ParseJson("");
+            this._projectName = "";
+            this._projectDescription = "";
+            this._projectUrl = "";
+            this._projectImagePath = "";
         }
 
-        public JsonObject(string jsonString)
+        public JsonObject(string projectName, string imagePath)
         {
-            this.RawJson = jsonString;
-            this.commits = ParseJson(jsonString);
+            this._rawJson = "";
+            this._commits = ParseJson("");
+            this._projectName = projectName;
+            this._projectImagePath = imagePath;
+
         }
-    
+
         public JsonObject(string jsonString, string name, string description, string url, string imagePath )
         {
-            this.RawJson = jsonString;
-            this.commits = ParseJson(jsonString);
-            this.projectName = name;
-            this.projectDescription = description;
-            this.projectURL = url;
-            this.projectImagePath = imagePath;
+            this._rawJson = jsonString;
+            this._commits = ParseJson(jsonString);
+            this._projectName = name;
+            this._projectDescription = description;
+            this._projectUrl = url;
+            this._projectImagePath = imagePath;
         }
 
         private IEnumerable<CommitObject> ParseJson(string jsonString)

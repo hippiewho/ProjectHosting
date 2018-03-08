@@ -1,14 +1,4 @@
-﻿@{ 
-/* 
- Project page heading should be replaces with the name of the project in final release
- Page should show revision events as well as the download link to allow for review.
- Later iteration of this page will have hidden information on this page. Hidden information will
- include but not be limited to the download link, revisor and statistics as well as extended bug
- information.
- Ill parse from github at a later time.
-*/
-}
-@model myWebsite.Models.JsonObject
+﻿@model myWebsite.Models.JsonObject
 
 <head>
     <link rel="stylesheet" type="text/css" href="~/Content/bootstrap.css" />
@@ -28,16 +18,19 @@
             <h3>Description:</h3>
             @Model.ProjectDescription
         </div>
-        <div class="pull-xs-right well col-md-6">
-            <h3>Resources:</h3>
-            <a href="@Model.ProjectURL"><img src="http://iconshow.me/media/images/ui/ios7-icons/png/128/social-github.png"style="width:3em; height:3em;" /> GitHub.Com</a>
-        </div>
+        @if (Model.ProjectUrl.Length > 0)
+        {
+            <div class="pull-xs-right well col-md-6">
+                <h3>Resources:</h3>
+                <a href="@Model.ProjectUrl"><img src="http://iconshow.me/media/images/ui/ios7-icons/png/128/social-github.png" style="width: 3em; height: 3em;" alt="github logo"/> GitHub.Com</a>
+            </div>  
+        }
     </div>
     <div class="row">
         <div class="pull-xs-left well col-md-6">
             <h3>Revision / Commit history:</h3>
             <ul>
-               @if (Model.Commits.Count() > 0)
+               @if (Model.Commits.Any())
                 {
                     foreach (var i in Model.Commits)
                     {
@@ -60,4 +53,3 @@
         </div>
         </div>
     </div>
-</div>
