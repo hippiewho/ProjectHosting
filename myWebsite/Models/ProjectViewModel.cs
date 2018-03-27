@@ -19,19 +19,21 @@ namespace myWebsite.Models
         [Required] [Display(Name = "Id")] [DataType(DataType.Text)]
         public int Id { get; set; }
 
-        [Required] [Display(Name = "Name")] [DataType(DataType.Text)]
-        private string _name;
+        [Required]
+        [Display(Name = "Name")]
+        [DataType(DataType.Text)]
+        private string _name = "";
 
 
         [Display(Name = "Description")] [DataType(DataType.Text)]
-        private string _description;
+        private string _description = "";
 
 
         [Display(Name = "Url")] [DataType(DataType.Url)]
-        private string _url;
+        private string _url = "";
 
         [DataType(DataType.ImageUrl)] [Display(Name = "ImagePath")]
-        private string _imagePath;
+        private string _imagePath = "";
 
         [Required] [DataType(DataType.Text)] [Display(Name = "Position")]
         public byte Position { get; set; }
@@ -39,9 +41,11 @@ namespace myWebsite.Models
         [Required] [DataType(DataType.Text)] [Display(Name = "UserId")]
         public int UserId { get; set; }
 
+
+
         public string Name
         {
-            get => _name.Trim();
+            get => _name;
 
             set => _name = value;
         }
@@ -63,6 +67,5 @@ namespace myWebsite.Models
 
             set => _imagePath = value;
         }
-
     }
 }

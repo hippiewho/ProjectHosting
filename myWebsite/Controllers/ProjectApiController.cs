@@ -24,20 +24,25 @@ namespace myWebsite.Controllers
             return projectContext.ProjectList.FirstOrDefault(x => x.Id == id);
         }
 
-        // POST api/<controller>
-        public void Post([FromBody]string value)
+        // POST api/ProjectApiController
+        public void Post(ProjectModel value)
         {
-            throw new NotImplementedException();
+            if (ModelState.IsValid)
+            {
+                projectContext.ProjectList.Add(value);
+                projectContext.SaveChanges();
+            }
         }
 
-        // PUT api/<controller>/5
+        // May not implement due to SQL auto increment
+        // PUT api/ProjectApiController/5
         public void Put(int id, [FromBody]string value)
         {
             throw new NotImplementedException();
 
         }
 
-        // DELETE api/<controller>/5
+        // DELETE api/ProjectApiController/5
         public void Delete(int id)
         {
             throw new NotImplementedException();
