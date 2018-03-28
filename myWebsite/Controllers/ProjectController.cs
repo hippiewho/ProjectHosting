@@ -1,4 +1,5 @@
 ﻿using myWebsite.Models;
+using myWebsite.Globals;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -97,13 +98,11 @@ namespace myWebsite.Controllers
         [Authorize]
         public ActionResult Edit(ProjectModel projectModel)
         {
-            if (ModelState.IsValid)
-            {
-                PC.Entry(projectModel).State = System.Data.Entity.EntityState.Modified;
-                PC.SaveChanges();
-                return RedirectToAction("Index");
-            }
-            return View(projectModel);
+            if (!ModelState.IsValid) return View(projectModel);
+            
+            PC.Entry(projectModel).State = System.Data.Entity.EntityState.Modified;
+            PC.SaveChanges();
+            return RedirectToAction("Index");
         }
 
         // GET: Projects/Create
@@ -123,12 +122,12 @@ namespace myWebsite.Controllers
                 Value = m.ID.ToString(),
                 Text = m.UserName
             });
-            string ImageFolder = "/Content/Images/";
-            List<string> imagePathList = new List<string>(Directory.EnumerateFiles(Server.MapPath(ImageFolder)));
+
+            List<string> imagePathList = GlobalVariables.GetImagePathList(Server);
 
             model.ImagePathSelectList = imagePathList.Select(m => new SelectListItem
             {
-                Value = ImageFolder + m.Substring(m.LastIndexOf("\\", StringComparison.Ordinal) + 1),
+                Value = GlobalVariables.ImageFolderPath + m.Substring(m.LastIndexOf("\\", StringComparison.Ordinal) + 1),
                 Text = m.Substring(m.LastIndexOf("\\", StringComparison.Ordinal) + 1)
             });
         }

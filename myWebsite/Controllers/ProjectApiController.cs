@@ -3,7 +3,11 @@ using System;
 using System.CodeDom;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
+using System.Web;
 using System.Web.Http;
+using myWebsite.Globals;
+using System.Threading.Tasks;
 
 namespace myWebsite.Controllers
 {
@@ -14,8 +18,34 @@ namespace myWebsite.Controllers
         // GET api/ProjectApiController
         public IEnumerable<ProjectModel> Get()
         {
-
             return projectContext.ProjectList.AsEnumerable();
+        }
+
+        // GET api/ProjectApiController/GetImageUserInfo
+        [Route("api/ProjectApiController/GetImageUserInfo")]
+        public Dictionary<string, Dictionary<string, string>> GetImagePathAndUserId()
+        {
+            Dictionary<string, Dictionary<string, string>> dict = new Dictionary<string, Dictionary<string, string>>();
+
+            const string userIds = "UserIds";
+            const string imagePaths = "ImagePaths";
+
+            dict.Add(userIds , new Dictionary<string, string>());
+            dict.Add(imagePaths, new Dictionary<string, string>());
+
+            LoginContext loginContext = new LoginContext();
+
+            foreach (var user in loginContext.UserList)
+            {
+                dict[userIds].Add(user.Name, user.ID.ToString());
+            }
+
+            foreach (var currentPath in GlobalVariables.GetImagePathList(new HttpServerUtilityWrapper(HttpContext.Current.Server)))
+            {
+                dict[imagePaths].Add(currentPath , currentPath);
+            }
+
+            return dict;
         }
 
         // GET api/ProjectApiController/5
@@ -25,27 +55,36 @@ namespace myWebsite.Controllers
         }
 
         // POST api/ProjectApiController
-        public void Post(ProjectModel value)
+        public async Task<bool> Post(ProjectModel value)
         {
-            if (ModelState.IsValid)
-            {
-                projectContext.ProjectList.Add(value);
-                projectContext.SaveChanges();
-            }
+            if (!ModelState.IsValid) return false;
+
+            projectContext.ProjectList.Add(value);
+            await projectContext.SaveChangesAsync();
+            return true;
         }
 
-        // May not implement due to SQL auto increment
         // PUT api/ProjectApiController/5
-        public void Put(int id, [FromBody]string value)
+        public async Task<bool> PutAsync(int id, ProjectModel value)
         {
-            throw new NotImplementedException();
+            if (projectContext.ProjectList.Find(id) == null || !ModelState.IsValid) return false;
 
+            projectContext.Entry(value).State = System.Data.Entity.EntityState.Modified;
+            await projectContext.SaveChangesAsync();
+
+            return true;
         }
 
         // DELETE api/ProjectApiController/5
-        public void Delete(int id)
+        public async Task<bool> DeleteAsync(int id)
         {
-            throw new NotImplementedException();
+            ProjectModel project = projectContext.ProjectList.Find(id);
+
+            if (project == null) return false;
+
+            projectContext.ProjectList.Remove(project);
+            await projectContext.SaveChangesAsync();
+            return true;
         }
     }
 }

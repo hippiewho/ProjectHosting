@@ -22,10 +22,8 @@ namespace myWebsite.Controllers
         // GET: Login
         public ActionResult Login()
         {
-            if (Request.IsAuthenticated)
-            {
-                return Redirect("Index");
-            }
+            if (Request.IsAuthenticated) return Redirect("Index");
+
             return View();
         }
 
@@ -82,15 +80,12 @@ namespace myWebsite.Controllers
         // GET: Login/Details/5
         public ActionResult Details(int? id)
         {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
+            if (id == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+
             LoginModel loginModel = LC.UserList.Find(id);
-            if (loginModel == null)
-            {
-                return HttpNotFound();
-            }
+
+            if (loginModel == null) return HttpNotFound();
+
             return View(loginModel);
         }
 
@@ -110,11 +105,9 @@ namespace myWebsite.Controllers
             if (ModelState.IsValid)
             {
                 var EmailCheck = LC.UserList
-                             .Where(User => User.Email == loginModel.Email)
-                             .FirstOrDefault();
+                             .FirstOrDefault(user => user.Email == loginModel.Email);
                 var UserNameCheck = LC.UserList
-                             .Where(User => User.UserName == loginModel.UserName)
-                             .FirstOrDefault();
+                             .FirstOrDefault(user => user.UserName == loginModel.UserName);
                 
                 bool isEmailInDatabase = EmailCheck != null;
                 bool isUserNameInDatabase = UserNameCheck != null;
@@ -127,13 +120,7 @@ namespace myWebsite.Controllers
                     LC.UserList.Add(loginModel);
                     LC.SaveChanges();
                     loginModel.Password = unecryptedPassword;
-                    if (Request.IsAuthenticated)
-                    {
-                        return Redirect("Index");
-                    } else
-                    {
-                        return Login(loginModel);
-                    }
+                    return Request.IsAuthenticated ? Redirect("Index") : Login(loginModel);
                 } else
                 {
                     if (isUserNameInDatabase) ViewBag.UserNameError = "User Name already in use!";
@@ -149,19 +136,14 @@ namespace myWebsite.Controllers
         // GET: Login/Edit/5
         public ActionResult Edit(int? id)
         {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            else
-            {
-                LoginModel loginModel = LC.UserList.Find(id);
-                if (loginModel == null)
-                {
-                    return HttpNotFound();
-                }
-                return View(loginModel);
-            }
+            if (id == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+
+            LoginModel loginModel = LC.UserList.Find(id);
+
+            if (loginModel == null) return HttpNotFound();
+
+            return View(loginModel);
+
         }
 
         // POST: Login/Edit/5
@@ -169,28 +151,22 @@ namespace myWebsite.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Edit([Bind(Include = "ID,Email,Password,Name,UserName")] LoginModel loginModel)
         {
-            if (ModelState.IsValid)
-            {
-                loginModel.Password = Crypto.HashPassword(loginModel.Password);
-                LC.Entry(loginModel).State = System.Data.Entity.EntityState.Modified;
-                LC.SaveChanges();
-                return RedirectToAction("Index");
-            }
-            return View(loginModel);
+            if (!ModelState.IsValid) return View(loginModel);
+
+            loginModel.Password = Crypto.HashPassword(loginModel.Password);
+            LC.Entry(loginModel).State = System.Data.Entity.EntityState.Modified;
+            LC.SaveChanges();
+            return RedirectToAction("Index");
         }
 
         // GET: Login/Delete/5
         public ActionResult Delete(int? id)
         {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
+            if (id == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            
             LoginModel loginModel = LC.UserList.Find(id);
-            if (loginModel == null)
-            {
-                return HttpNotFound();
-            }
+            if (loginModel == null) return HttpNotFound();
+
             return View(loginModel);
         }
 
