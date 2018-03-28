@@ -67,9 +67,17 @@ namespace myWebsite.Controllers
         // PUT api/ProjectApiController/5
         public async Task<bool> PutAsync(int id, ProjectModel value)
         {
-            if (projectContext.ProjectList.Find(id) == null || !ModelState.IsValid) return false;
+            ProjectModel project;
+            if ((project = projectContext.ProjectList.Find(id)) == null || !ModelState.IsValid) return false;
 
-            projectContext.Entry(value).State = System.Data.Entity.EntityState.Modified;
+            project.ImagePath = value.ImagePath;
+            project.Name = value.Name;
+            project.Description = value.Description;
+            project.Position = value.Position;
+            project.Url = value.Url;
+            project.UserId = value.UserId;
+
+            projectContext.Entry(project).State = System.Data.Entity.EntityState.Modified;
             await projectContext.SaveChangesAsync();
 
             return true;
