@@ -1,16 +1,4 @@
-﻿@Html.DevExpress().GetStyleSheets(
-    new StyleSheet { ExtensionSuite = ExtensionSuite.NavigationAndLayout },
-    new StyleSheet { ExtensionSuite = ExtensionSuite.HtmlEditor },
-    new StyleSheet { ExtensionSuite = ExtensionSuite.GridView },
-    new StyleSheet { ExtensionSuite = ExtensionSuite.TreeList }
-    )
-@Html.DevExpress().GetScripts( 
-    new Script { ExtensionSuite = ExtensionSuite.NavigationAndLayout },
-    new Script { ExtensionSuite = ExtensionSuite.HtmlEditor },
-    new Script { ExtensionSuite = ExtensionSuite.GridView },
-    new Script { ExtensionSuite = ExtensionSuite.TreeList }
-    )
-
+﻿
 
 <!DOCTYPE html>
 <html>
@@ -20,7 +8,26 @@
     <title>@ViewBag.Title - Franks Website!</title>
     <link href="~/Content/Site.css" rel="stylesheet" type="text/css" />
     <link href="~/Content/bootstrap.min.css" rel="stylesheet" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="~/Content/bootstrap.css" />
     <script src="~/Scripts/modernizr-2.8.3.js"></script>
+    <script src="~/scripts/jquery-3.3.1.js"></script>
+    <script src="~/scripts/jquery-3.3.1.min.js"></script>
+    
+    @*
+    @Html.DevExpress().GetStyleSheets(
+        new StyleSheet { ExtensionSuite = ExtensionSuite.NavigationAndLayout },
+        new StyleSheet { ExtensionSuite = ExtensionSuite.HtmlEditor },
+        new StyleSheet { ExtensionSuite = ExtensionSuite.GridView },
+        new StyleSheet { ExtensionSuite = ExtensionSuite.TreeList }
+        )
+    @Html.DevExpress().GetScripts( 
+        new Script { ExtensionSuite = ExtensionSuite.NavigationAndLayout },
+        new Script { ExtensionSuite = ExtensionSuite.HtmlEditor },
+        new Script { ExtensionSuite = ExtensionSuite.GridView },
+        new Script { ExtensionSuite = ExtensionSuite.TreeList }
+        )
+    *@
+
 </head>
 <body>
     <div class="navbar navbar-inverse navbar-fixed-top">
