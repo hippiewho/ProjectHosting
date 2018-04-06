@@ -7,6 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Text;
 using System.Threading.Tasks;
 
 using System.Web;
@@ -23,47 +24,72 @@ namespace myWebsite.Controllers
         // GET: Projects/Project
         public async Task<ActionResult> Project(int? id)
         {
-            if (id == null)
+            if (id == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            
+            ProjectModel projectModel = PC.ProjectList.FirstOrDefault(modelItem => modelItem.Id == id);
+            if (projectModel == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+
+            LoginModel loginModel = LC.UserList.FirstOrDefault(loginItem => loginItem.ID == projectModel.UserId);
+            if (loginModel == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+
+
+            ProjectJsonObject projectJson = new ProjectJsonObject(projectModel.Name.Trim() , projectModel.ImagePath , projectModel.Url , id);
+
+            return View(projectJson);
+
+        }
+
+        public async Task<String> GetGitCommits(int? id)
+        {
+            if (id == null) return null;
+
+            ProjectModel projectModel = PC.ProjectList.FirstOrDefault(modelItem => modelItem.Id == id);
+            if (projectModel == null) return GetCommitsToString(new ProjectJsonObject().Commits);
+
+            LoginModel loginModel = LC.UserList.FirstOrDefault(loginItem => loginItem.ID == projectModel.UserId);
+            if (loginModel == null) return GetCommitsToString(new ProjectJsonObject().Commits);
+
+            HttpClient httpClient = new HttpClient();
+            httpClient.DefaultRequestHeaders.Add("User-Agent", "Franks Server");
+            string httprequeststring = "Https://api.github.com/repos/" + loginModel.UserName.Trim() + "/" + projectModel.Name.Trim() + "/commits";
+            ProjectJsonObject projectJson;
+            try
             {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                var apiCallResponse = await httpClient.GetStringAsync(httprequeststring);
+                projectJson = new ProjectJsonObject(apiCallResponse, projectModel.Name, projectModel.Description, projectModel.Url, projectModel.ImagePath, projectModel.Id);
             }
-            else
+            catch (Exception e)
             {
-                ProjectModel projectModel = PC.ProjectList.FirstOrDefault(modelItem => modelItem.Id == id);
-                if (projectModel == null)
-                {
-                    return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-                }
-                else
-                {
-                    LoginModel loginModel = LC.UserList.FirstOrDefault(loginItem => loginItem.ID == projectModel.UserId);
-                    if (loginModel != null)
-                    {
-                        HttpClient httpClient = new HttpClient();
-                        httpClient.DefaultRequestHeaders.Add("User-Agent", "Franks Server");
-                        string httprequeststring = "Https://api.github.com/repos/" + loginModel.UserName.Trim() + "/" + projectModel.Name.Trim() + "/commits";
-                        JsonObject json;
-                        try
-                        {
-                            var apiCallResponse = await httpClient.GetStringAsync(httprequeststring);
-                            json = new JsonObject(apiCallResponse, projectModel.Name, projectModel.Description, projectModel.Url, projectModel.ImagePath);
-                        }
-                        catch (Exception e)
-                        {
-                            System.Diagnostics.Debug.WriteLine(e.ToString());
-                            json = new JsonObject(projectModel.Name.Trim() , projectModel.ImagePath);
-                        }
-                        return View(json);
-                    }
-                    else
-                    {
-                        return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-                    }
-
-                }
-
+                System.Diagnostics.Debug.WriteLine(e.ToString());
+                projectJson = new ProjectJsonObject(projectModel.Name.Trim(), projectModel.ImagePath, projectModel.Url, id);
             }
+            return GetCommitsToString(projectJson.Commits);
+        }
 
+        public string GetCommitsToString(IEnumerable<CommitObject> commits)
+        {
+            if (!commits.Any()) return "No commits or Error Contacting Server";
+            StringBuilder returnObject = new StringBuilder();
+
+            foreach (var commit in commits)
+            {
+                returnObject.Append("<li>Author:");
+                returnObject.Append(commit.Author);
+                returnObject.Append("</li>");
+                returnObject.Append("<ul>");
+                returnObject.Append("<li class=\"CommitArea\">Commit SHA:");
+                returnObject.Append(commit.Sha);
+                returnObject.Append("</li>");
+                returnObject.Append("<li>Commit Date: ");
+                returnObject.Append(commit.Date);
+                returnObject.Append("</li>");
+                returnObject.Append("<li>Commit Message: ");
+                returnObject.Append(commit.Message);
+                returnObject.Append("</li>");
+                returnObject.Append("</ul>");
+                returnObject.Append("<br/>");
+            }
+            return returnObject.ToString();
         }
 
         // GET: Project/Index

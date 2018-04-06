@@ -26,14 +26,20 @@ namespace myWebsite.Controllers
         public Dictionary<string, Dictionary<string, string>> GetImagePathAndUserId()
         {
             Dictionary<string, Dictionary<string, string>> dict = new Dictionary<string, Dictionary<string, string>>();
+            LoginContext loginContext = new LoginContext();
 
             const string userIds = "UserIds";
             const string imagePaths = "ImagePaths";
 
-            dict.Add(userIds , new Dictionary<string, string>());
-            dict.Add(imagePaths, new Dictionary<string, string>());
+            AddUsersImagePaths(dict, userIds, imagePaths, loginContext);
 
-            LoginContext loginContext = new LoginContext();
+            return dict;
+        }
+
+        private static void AddUsersImagePaths(Dictionary<string, Dictionary<string, string>> dict, string userIds, string imagePaths, LoginContext loginContext)
+        {
+            dict.Add(userIds, new Dictionary<string, string>());
+            dict.Add(imagePaths, new Dictionary<string, string>());
 
             foreach (var user in loginContext.UserList)
             {
@@ -42,10 +48,8 @@ namespace myWebsite.Controllers
 
             foreach (var currentPath in GlobalVariables.GetImagePathList(new HttpServerUtilityWrapper(HttpContext.Current.Server)))
             {
-                dict[imagePaths].Add(currentPath , currentPath);
+                dict[imagePaths].Add(currentPath, currentPath);
             }
-
-            return dict;
         }
 
         // GET api/ProjectApiController/5
@@ -70,17 +74,22 @@ namespace myWebsite.Controllers
             ProjectModel project;
             if ((project = projectContext.ProjectList.Find(id)) == null || !ModelState.IsValid) return false;
 
-            project.ImagePath = value.ImagePath;
-            project.Name = value.Name;
-            project.Description = value.Description;
-            project.Position = value.Position;
-            project.Url = value.Url;
-            project.UserId = value.UserId;
+            SetProjectModelProperties(project, value);
 
             projectContext.Entry(project).State = System.Data.Entity.EntityState.Modified;
             await projectContext.SaveChangesAsync();
 
             return true;
+        }
+
+        private void SetProjectModelProperties(ProjectModel project, ProjectModel editedProjectModel)
+        {
+            project.ImagePath = editedProjectModel.ImagePath;
+            project.Name = editedProjectModel.Name;
+            project.Description = editedProjectModel.Description;
+            project.Position = editedProjectModel.Position;
+            project.Url = editedProjectModel.Url;
+            project.UserId = editedProjectModel.UserId;
         }
 
         // DELETE api/ProjectApiController/5

@@ -5,12 +5,13 @@ using System.Collections.Generic;
 using System.Diagnostics;
 namespace myWebsite.Models
 {
-    public class JsonObject
+    public class ProjectJsonObject
     {
         private readonly string _projectName = "";
         private readonly string _projectDescription = "";
         private readonly string _projectUrl = "";
         private readonly string _projectImagePath = "";
+        private readonly string _projectId = "";
         private readonly IEnumerable<CommitObject> _commits;
 
         private object _rawJson = "";
@@ -20,8 +21,9 @@ namespace myWebsite.Models
         public string ProjectUrl { get => _projectUrl;}
         public IEnumerable<CommitObject> Commits => _commits;
         public string ProjectImagePath { get => _projectImagePath; }
+        public string ProjectId { get => _projectId; }
 
-        public JsonObject()
+        public ProjectJsonObject()
         {
             this._rawJson = "";
             this._commits = ParseJson("");
@@ -29,18 +31,20 @@ namespace myWebsite.Models
             this._projectDescription = "";
             this._projectUrl = "";
             this._projectImagePath = "";
+            this._projectId = "";
         }
 
-        public JsonObject(string projectName, string imagePath)
+        public ProjectJsonObject(string projectName, string imagePath, string url, int? id)
         {
             this._rawJson = "";
             this._commits = ParseJson("");
             this._projectName = projectName;
             this._projectImagePath = imagePath;
-
+            this._projectUrl = url;
+            this._projectId = id.ToString();
         }
 
-        public JsonObject(string jsonString, string name, string description, string url, string imagePath )
+        public ProjectJsonObject(string jsonString, string name, string description, string url, string imagePath, int id )
         {
             this._rawJson = jsonString;
             this._commits = ParseJson(jsonString);
@@ -48,6 +52,7 @@ namespace myWebsite.Models
             this._projectDescription = description;
             this._projectUrl = url;
             this._projectImagePath = imagePath;
+            this._projectId = id.ToString();
         }
 
         private IEnumerable<CommitObject> ParseJson(string jsonString)

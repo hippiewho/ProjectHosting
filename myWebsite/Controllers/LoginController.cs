@@ -143,7 +143,6 @@ namespace myWebsite.Controllers
             if (loginModel == null) return HttpNotFound();
 
             return View(loginModel);
-
         }
 
         // POST: Login/Edit/5
