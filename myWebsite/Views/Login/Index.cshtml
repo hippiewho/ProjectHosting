@@ -4,6 +4,14 @@
     ViewBag.Title = "Index";
 }
 
+<script>
+    $(document).ready(function() {
+        $(".PasswordHeaderArea").hide();
+        $(".PasswordArea").hide();
+
+    })
+</script>
+
 <h2>Account Management</h2>
 
 <p>
@@ -14,7 +22,7 @@
         <th>
             @Html.DisplayNameFor(model => model.Email)
         </th>
-        <th>
+        <th class="PasswordHeaderArea">
             @Html.DisplayNameFor(model => model.Password)
         </th>
         <th>
@@ -31,8 +39,10 @@
         <td>
             @Html.DisplayFor(modelItem => item.Email)
         </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.Password)
+        <td class="PasswordArea">
+            <div >
+                @Html.DisplayFor(modelItem => item.Password)
+            </div>
         </td>
         <td>
             @Html.DisplayFor(modelItem => item.Name)

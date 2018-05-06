@@ -1,22 +1,44 @@
 ﻿@model myWebsite.Models.ProjectJsonObject
 
+<script>
+    $(document).ready(function () {
+        $("#GetCommitsAjaxButton").click(function() {
+            $.ajax({
+                url: "/Projects/GetRawGitCommits/@Model.ProjectId",
+                datatype: "JSON",
+                success: function(result) {
+                    var jsontostringobj = parseJsonObject(result);
+                    $("#commitArea").append(jsontostringobj);
 
-    <script>
-        $(document).ready(function () {
-            console.log("WTF on ready");
-
-            $("#GetCommitsAjax").click(function() {
-                $.ajax({
-                    url: "/Projects/GetGitCommits/@Model.ProjectId",
-                    datatype: "JSON",
-                    success: function(result) {
-                        $("#commitArea").html(result);
-                    }
-                });
-                $("#GetCommitsAjax").hide();
+                }
             });
+            $("#GetCommitsAjaxButton").hide();
         });
-    </script>
+    });
+</script>
+<script>
+    function parseJsonObject(jreturn)
+    {
+        console.log(jreturn);
+        var jobj = JSON.parse(jreturn);
+        var commitstring = "";
+
+        jobj.forEach(function (key, index)
+        {
+            console.log(key.sha + " " + key.commit.author.name + " " + key.commit.message + " at index: " + index);
+            commitstring = commitstring + "<li>Author:" +
+                key.commit.author.name +
+                "</li><ul><li><div class=\"CommitShaArea\">Commit SHA: " +
+                key.sha +
+                "</div></li><li>Commit Date: " +
+                key.commit.author.date +
+                "</li><li>Commit Message: " +
+                key.commit.message +
+                "</li></ul><br />";
+        });
+        return commitstring;
+    }
+</script>
 
 <div class="container" >
     <h2>Project:</h2> <h2 style="text-align:center">@Model.ProjectName</h2>
@@ -46,7 +68,7 @@
         <div class="pull-xs-left well col-md-6">
             <h3>Commit History:</h3>
             <br/>
-            <button class="btn btn-default" id="GetCommitsAjax">Get Commits</button>
+            <button class="btn btn-default" id="GetCommitsAjaxButton">Get Commits</button>
 
 
             <div id="commitArea">

@@ -1,5 +1,5 @@
-﻿using myWebsite.Models;
-using myWebsite.Globals;
+﻿using myWebsite.Globals;
+using myWebsite.Models;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -25,7 +25,7 @@ namespace myWebsite.Controllers
         public async Task<ActionResult> Project(int? id)
         {
             if (id == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            
+
             ProjectModel projectModel = PC.ProjectList.FirstOrDefault(modelItem => modelItem.Id == id);
             if (projectModel == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
 
@@ -33,9 +33,27 @@ namespace myWebsite.Controllers
             if (loginModel == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
 
 
-            ProjectJsonObject projectJson = new ProjectJsonObject(projectModel.Name.Trim() , projectModel.ImagePath , projectModel.Url , id);
+            ProjectJsonObject projectJson = new ProjectJsonObject(projectModel.Name.Trim(), projectModel.ImagePath, projectModel.Url, id);
 
             return View(projectJson);
+
+        }
+
+        public async Task<String> GetRawGitCommits(int? id)
+        {
+            if (id == null) return null;
+
+            ProjectModel projectModel = PC.ProjectList.FirstOrDefault(modelItem => modelItem.Id == id);
+            if (projectModel == null) return GetCommitsToString(new ProjectJsonObject().Commits);
+
+            LoginModel loginModel = LC.UserList.FirstOrDefault(loginItem => loginItem.ID == projectModel.UserId);
+            if (loginModel == null) return GetCommitsToString(new ProjectJsonObject().Commits);
+
+            HttpClient httpClient = new HttpClient();
+            httpClient.DefaultRequestHeaders.Add("User-Agent", "Franks Server");
+            string httprequeststring = "Https://api.github.com/repos/" + loginModel.UserName.Trim() + "/" + projectModel.Name.Trim() + "/commits";
+
+            return await httpClient.GetStringAsync(httprequeststring);
 
         }
 
@@ -88,6 +106,7 @@ namespace myWebsite.Controllers
                 returnObject.Append("</li>");
                 returnObject.Append("</ul>");
                 returnObject.Append("<br/>");
+                returnObject.Append("\n");
             }
             return returnObject.ToString();
         }
@@ -125,7 +144,7 @@ namespace myWebsite.Controllers
         public ActionResult Edit(ProjectModel projectModel)
         {
             if (!ModelState.IsValid) return View(projectModel);
-            
+
             PC.Entry(projectModel).State = System.Data.Entity.EntityState.Modified;
             PC.SaveChanges();
             return RedirectToAction("Index");

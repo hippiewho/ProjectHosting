@@ -18,7 +18,10 @@ namespace myWebsite.Controllers
         {
             var queryList = PC.ProjectList.Where(entry => entry.Position == 1 || 
                                                           entry.Position == 2 || 
-                                                          entry.Position == 3)
+                                                          entry.Position == 3 ||
+                                                          entry.Position == 4 ||
+                                                          entry.Position == 5 ||
+                                                          entry.Position == 6 )
                                           .ToList();
 
             return View(queryList);

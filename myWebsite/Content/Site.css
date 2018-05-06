@@ -16,7 +16,7 @@ textarea {
     max-width: 280px;
 }
 
-.CommitArea {
+.CommitShaArea {
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
