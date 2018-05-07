@@ -9,16 +9,21 @@ namespace myWebsite.Models
     {
         private readonly string _projectName = "";
         private readonly string _projectDescription = "";
-        private readonly string _projectUrl = "";
+        private readonly string _projectgithubUrl = "";
+        private readonly string _projectsiteUrl = "";
+        private readonly string _projectotherUrl = "";
         private readonly string _projectImagePath = "";
         private readonly string _projectId = "";
+
         private readonly IEnumerable<CommitObject> _commits;
 
         private object _rawJson = "";
 
         public string ProjectName { get => _projectName; }
         public string ProjectDescription { get => _projectDescription; }
-        public string ProjectUrl { get => _projectUrl;}
+        public string ProjectGitHubUrl { get => _projectgithubUrl; }
+        public string ProjectSiteUrl { get => _projectsiteUrl; }
+        public string ProjectOtherUrl { get => _projectotherUrl; }
         public IEnumerable<CommitObject> Commits => _commits;
         public string ProjectImagePath { get => _projectImagePath; }
         public string ProjectId { get => _projectId; }
@@ -29,28 +34,34 @@ namespace myWebsite.Models
             this._commits = ParseJson("");
             this._projectName = "";
             this._projectDescription = "";
-            this._projectUrl = "";
+            this._projectgithubUrl = "";
+            this._projectsiteUrl = "";
+            this._projectotherUrl = "";
             this._projectImagePath = "";
             this._projectId = "";
         }
 
-        public ProjectJsonObject(string projectName, string imagePath, string url, int? id)
+        public ProjectJsonObject(string projectName, string imagePath, string githuburl, string siteurl, string otherurl, int? id)
         {
             this._rawJson = "";
             this._commits = ParseJson("");
             this._projectName = projectName;
             this._projectImagePath = imagePath;
-            this._projectUrl = url;
+            this._projectgithubUrl = githuburl;
+            this._projectsiteUrl = siteurl;
+            this._projectotherUrl = otherurl;
             this._projectId = id.ToString();
         }
 
-        public ProjectJsonObject(string jsonString, string name, string description, string url, string imagePath, int id )
+        public ProjectJsonObject(string jsonString, string name, string description, string githuburl, string siteurl, string otherurl, string imagePath, int id )
         {
             this._rawJson = jsonString;
             this._commits = ParseJson(jsonString);
             this._projectName = name;
             this._projectDescription = description;
-            this._projectUrl = url;
+            this._projectgithubUrl = githuburl;
+            this._projectsiteUrl = siteurl;
+            this._projectotherUrl = otherurl;
             this._projectImagePath = imagePath;
             this._projectId = id.ToString();
         }

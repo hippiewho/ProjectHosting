@@ -88,7 +88,9 @@ namespace myWebsite.Controllers
             project.Name = editedProjectModel.Name;
             project.Description = editedProjectModel.Description;
             project.Position = editedProjectModel.Position;
-            project.Url = editedProjectModel.Url;
+            project.GitHubUrl = editedProjectModel.GitHubUrl;
+            project.SiteUrl = editedProjectModel.SiteUrl;
+            project.OtherUrl = editedProjectModel.OtherUrl;
             project.UserId = editedProjectModel.UserId;
         }
 

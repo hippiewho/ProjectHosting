@@ -21,13 +21,17 @@ namespace myWebsite.Models
         [DataType(DataType.Text)]
         private string _name = "";
 
-
         [Display(Name = "Description")] [DataType(DataType.Text)]
-        private string _description = "";
+        private string _description = " ";
 
+        [Display(Name = "GitHubUrl")] [DataType(DataType.Url)]
+        private string _githuburl = "";
 
-        [Display(Name = "Url")] [DataType(DataType.Url)]
-        private string _url = "";
+        [Display(Name = "SiteUrl")] [DataType(DataType.Url)]
+        private string _siteurl = "";
+
+        [Display(Name = "OtherUrl")] [DataType(DataType.Url)]
+        private string _otherurl = "";
 
         [DataType(DataType.ImageUrl)] [Display(Name = "ImagePath")]
         private string _imagePath = "";
@@ -52,11 +56,25 @@ namespace myWebsite.Models
 
             set => _description = value;
         }
-        public string Url
+        public string GitHubUrl
         {
-            get => _url.Trim();
+            get => _githuburl.Trim();
 
-            set => _url = value;
+            set => _githuburl = value ?? "";
+        }
+
+        public string SiteUrl
+        {
+            get => _siteurl.Trim();
+
+            set => _siteurl = value ?? "";
+        }
+
+        public string OtherUrl
+        {
+            get => _otherurl.Trim();
+
+            set => _otherurl = value ?? "";
         }
         public string ImagePath
         {

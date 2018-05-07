@@ -7,19 +7,30 @@ namespace myWebsite.Models
 {
     public class ProjectHelperClass
     {
+        [Display(Name = "Id")]
+        [DataType(DataType.Text)]
+        public int Id { get; set; }
+
         [Required]
         [Display(Name = "Name")]
         [DataType(DataType.Text)]
         public string Name { get; set; }
 
-
         [Display(Name = "Description")]
         [DataType(DataType.Text)]
         public string Description { get; set; }
 
-        [Display(Name = "Url")]
+        [Display(Name = "GitHubUrl")]
         [DataType(DataType.Url)]
-        public string Url { get; set; }
+        public string GitHubUrl { get; set; }
+
+        [Display(Name = "SiteUrl")]
+        [DataType(DataType.Url)]
+        public string SiteUrl { get; set; }
+
+        [Display(Name = "OtherUrl")]
+        [DataType(DataType.Url)]
+        public string OtherUrl { get; set; }
 
         [DataType(DataType.ImageUrl)]
         [Display(Name = "ImagePath")]

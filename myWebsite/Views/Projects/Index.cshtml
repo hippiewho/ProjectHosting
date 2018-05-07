@@ -13,48 +13,64 @@
     @Html.ActionLink("Upload Photo For Project", "UploadImage")
 </p>
 <table class="table">
+    <thead>
     <tr>
-        <th>
+        <th scope="col">
             @Html.DisplayNameFor(model => model.Name)
         </th>
-        <th>
+        <th scope="col">
             @Html.DisplayNameFor(model => model.Description)
         </th>
-        <th>
-            @Html.DisplayNameFor(model => model.Url)
+        <th scope="col">
+            @Html.DisplayNameFor(model => model.GitHubUrl)
         </th>
-        <th>
+        <th scope="col">
+            @Html.DisplayNameFor(model => model.SiteUrl)
+        </th>
+        <th scope="col">
+            @Html.DisplayNameFor(model => model.OtherUrl)
+        </th>
+        <th scope="col">
             @Html.DisplayNameFor(model => model.ImagePath)
         </th>
-        <th>
+        <th scope="col">
             @Html.DisplayNameFor(model => model.Position)
         </th>
-        <th></th>
+        <th scope="col"></th>
     </tr>
-
-@foreach (var item in Model) {
-    <tr>
-        <td>
-            <a href="./Projects/Project/@item.Id">@Html.DisplayFor(modelItem => item.Name) </a>
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.Description)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.Url)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.ImagePath)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.Position)
-        </td>
-        <td>
-            @Html.ActionLink("Edit", "Edit", new { id=item.Id }) |
-            @Html.ActionLink("Details", "ProjectDetails", new { id=item.Id }) |
-            @Html.ActionLink("Delete", "Delete", new { id=item.Id })
-        </td>
-    </tr>
-}
+    </thead>
+    <tbody>
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td scope="row">
+                <a href="./Projects/Project/@item.Id">@Html.DisplayFor(modelItem => item.Name) </a>
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Description)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.GitHubUrl)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.SiteUrl)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.OtherUrl)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ImagePath)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Position)
+            </td>
+            <td>
+                @Html.ActionLink("Edit", "Edit", new {id = item.Id}) |
+                @Html.ActionLink("Details", "ProjectDetails", new {id = item.Id}) |
+                @Html.ActionLink("Delete", "Delete", new {id = item.Id})
+            </td>
+        </tr>
+    }
+    </tbody>
 
 </table>

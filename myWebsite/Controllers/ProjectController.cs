@@ -33,7 +33,7 @@ namespace myWebsite.Controllers
             if (loginModel == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
 
 
-            ProjectJsonObject projectJson = new ProjectJsonObject(projectModel.Name.Trim(), projectModel.ImagePath, projectModel.Url, id);
+            ProjectJsonObject projectJson = new ProjectJsonObject(projectModel.Name.Trim(), projectModel.ImagePath, projectModel.GitHubUrl, projectModel.SiteUrl, projectModel.OtherUrl, id);
 
             return View(projectJson);
 
@@ -74,12 +74,12 @@ namespace myWebsite.Controllers
             try
             {
                 var apiCallResponse = await httpClient.GetStringAsync(httprequeststring);
-                projectJson = new ProjectJsonObject(apiCallResponse, projectModel.Name, projectModel.Description, projectModel.Url, projectModel.ImagePath, projectModel.Id);
+                projectJson = new ProjectJsonObject(apiCallResponse, projectModel.Name, projectModel.Description, projectModel.GitHubUrl, projectModel.SiteUrl, projectModel.OtherUrl, projectModel.ImagePath, projectModel.Id);
             }
             catch (Exception e)
             {
                 System.Diagnostics.Debug.WriteLine(e.ToString());
-                projectJson = new ProjectJsonObject(projectModel.Name.Trim(), projectModel.ImagePath, projectModel.Url, id);
+                projectJson = new ProjectJsonObject(projectModel.Name.Trim(), projectModel.ImagePath, projectModel.GitHubUrl, projectModel.SiteUrl, projectModel.OtherUrl, id);
             }
             return GetCommitsToString(projectJson.Commits);
         }
@@ -122,30 +122,48 @@ namespace myWebsite.Controllers
         [Authorize]
         public ActionResult Edit(int? id)
         {
-            if (id == null)
+            if (id == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            ProjectModel projectModel = PC.ProjectList.Find(id);
+            if (projectModel == null) return new HttpStatusCodeResult(HttpStatusCode.NotFound);
+
+            ProjectHelperClass model = new ProjectHelperClass()
             {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            else
-            {
-                ProjectModel projectModel = PC.ProjectList.Find(id);
-                if (projectModel == null)
-                {
-                    return HttpNotFound();
-                }
-                return View(projectModel);
-            }
+                Name = projectModel.Name,
+                Description = projectModel.Description,
+                GitHubUrl = projectModel.GitHubUrl,
+                SiteUrl = projectModel.SiteUrl,
+                OtherUrl = projectModel.OtherUrl,
+                ImagePath = projectModel.ImagePath,
+                Position = projectModel.Position,
+                UserId = projectModel.UserId
+            };
+            ConfigureHelperClass(model);
+            
+            return View(model);
         }
 
         // POST: Projects/Edit
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize]
-        public ActionResult Edit(ProjectModel projectModel)
+        public ActionResult Edit(ProjectHelperClass projectHelperModel)
         {
-            if (!ModelState.IsValid) return View(projectModel);
+            if (!ModelState.IsValid) return View(projectHelperModel);
 
-            PC.Entry(projectModel).State = System.Data.Entity.EntityState.Modified;
+            ProjectModel project = new ProjectModel()
+            {
+                Id = projectHelperModel.Id,
+                Description = projectHelperModel.Description,
+                GitHubUrl = projectHelperModel.GitHubUrl,
+                ImagePath = projectHelperModel.ImagePath,
+                Name = projectHelperModel.Name,
+                OtherUrl = projectHelperModel.OtherUrl,
+                Position = projectHelperModel.Position,
+                SiteUrl = projectHelperModel.SiteUrl,
+                UserId = projectHelperModel.UserId
+            };
+
+            PC.Entry(project).State = System.Data.Entity.EntityState.Modified;
             PC.SaveChanges();
             return RedirectToAction("Index");
         }
@@ -188,7 +206,9 @@ namespace myWebsite.Controllers
                 {
                     Name = model.Name,
                     Description = model.Description,
-                    Url = model.Url,
+                    GitHubUrl = model.GitHubUrl,
+                    SiteUrl = model.SiteUrl,
+                    OtherUrl = model.OtherUrl,
                     ImagePath = model.ImagePath,
                     Position = model.Position,
                     UserId = model.UserId
@@ -209,19 +229,12 @@ namespace myWebsite.Controllers
         // GET: Projects/ProjectDetails/id
         public ActionResult ProjectDetails(int? id)
         {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            else
-            {
-                ProjectModel project = PC.ProjectList.FirstOrDefault(modelItem => modelItem.Id == id);
-                if (project == null)
-                {
-                    return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-                }
-                return View(project);
-            }
+            if (id == null) return new HttpStatusCodeResult(HttpStatusCode.NotFound);
+            ProjectModel project = PC.ProjectList.FirstOrDefault(modelItem => modelItem.Id == id);
+            if (project == null)return new HttpStatusCodeResult(HttpStatusCode.NotFound);
+
+            return View(project);
+            
         }
 
         // GET: Projects/UploadImage
